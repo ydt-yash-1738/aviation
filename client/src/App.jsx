@@ -8,6 +8,7 @@ import Intro from './pages/Intro';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import QuickQuote from './quote/QuickQuote';
+import PreQuote from './quote/PreQuote';
 
 const App = () => (
   <AuthProvider>
@@ -20,6 +21,7 @@ const App = () => (
         <Route path="/intro" element={<PrivateRoute><Intro /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/quote/quick" element={<PrivateRoute><QuickQuote /></PrivateRoute>} />
+        <Route path="/quote/pre" element={<PrivateRoute><PreQuote /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   </AuthProvider>

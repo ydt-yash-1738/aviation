@@ -23,7 +23,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 p-8">
           <div className="text-center mb-8">

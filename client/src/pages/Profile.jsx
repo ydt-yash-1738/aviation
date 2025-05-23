@@ -4,13 +4,14 @@ import { AuthContext } from '../context/AuthContext';
 
 const Profile = () => {
   const { auth } = useContext(AuthContext);
-
+  
   // Get user initials for avatar
   const getInitials = () => {
-    const name = formData.firstName || 'User';
+    const name = auth.user.firstName || 'User';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
-
+  console.log(auth.user.firstName);
+ 
   // Format join date
   const formatJoinDate = () => {
     if (auth?.joinDate) {
@@ -46,13 +47,13 @@ const Profile = () => {
             <div className="relative z-10">
               <div className="w-32 h-32 bg-gradient-to-br from-white to-gray-200 rounded-full mx-auto mb-6 flex items-center justify-center shadow-2xl">
                 <span className="text-4xl font-bold text-purple-600">
-                  hi
+                  {getInitials()}
                 </span>
               </div>
               <h2 className="text-3xl font-bold text-white mb-2">
-                hi
+                {auth.user.firstName} {auth.user.lastName}
               </h2>
-              <p className="text-purple-100 mb-4">email</p>
+              <p className="text-purple-100 mb-4">{auth.user.email}</p>
               <div className="inline-flex items-center bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-4 py-2">
                 <svg className="w-4 h-4 text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h8m-8 0l1.5 5.5a3 3 0 003 3h3a3 3 0 003-3L18 7H6z"></path>
@@ -61,14 +62,12 @@ const Profile = () => {
               </div>
             </div>
           </div>
-
-          
         </div>
 
         {/* Activity Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-20 text-center">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 rounded-full mx-auto mb-4 flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>

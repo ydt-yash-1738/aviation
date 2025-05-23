@@ -5,7 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 const Navbar = () => {
   const { auth, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-
+ 
   const handleLogout = (e) => {
     e.preventDefault();
     console.log('Logout clicked');
@@ -89,15 +89,15 @@ const Navbar = () => {
                 <div className="hidden sm:flex items-center space-x-3 pointer-events-none">
                   <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-semibold">
-                      {auth?.username ? auth.username.charAt(0).toUpperCase() : 'U'}
+                      {auth?.user.firstName ? auth.user.firstName.charAt(0).toUpperCase() : 'U'}
                     </span>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-white font-medium">
-                      {auth?.username || 'User'}
+                      {auth?.user.firstName || 'User'}
                     </p>
                     <p className="text-xs text-purple-300">
-                      {auth?.email || 'Welcome back!'}
+                      {auth?.user.email || 'Welcome back!'}
                     </p>
                   </div>
                 </div>

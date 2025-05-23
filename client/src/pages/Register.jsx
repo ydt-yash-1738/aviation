@@ -21,7 +21,6 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-900 to-cyan-900 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 p-8">
           <div className="text-center mb-8">

@@ -4,17 +4,16 @@ const Intro = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-900 via-emerald-900 to-teal-900 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black opacity-40"></div>
-      <div className="relative z-10 text-center max-w-2xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-r from-slate-900 via-fuchsia-900 to-slate-900 flex items-center justify-center">
+      <div className="relative z-10 text-center max-w-2xl mx-auto px-4 mt-5 mb-5">
         <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 p-12">
-          <div className="w-24 h-24 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full mx-auto mb-6 flex items-center justify-center shadow-2xl">
+          <div className="w-24 h-24 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 rounded-full mx-auto mb-6 flex items-center justify-center shadow-2xl">
             <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent mb-4">
-            Welcome Aboard! ✈️
+            Welcome Aboard! 
           </h1>
           <p className="text-xl text-gray-300 mb-8 leading-relaxed">
             You’ve successfully signed in to the Aviation Non-Owned Insurance Portal. Easily create quotes, submit risks, and manage referrals with confidence and speed.
@@ -55,7 +54,7 @@ const Intro = () => {
           </div>
           <button
             onClick={() => navigate('/quote/quick')}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            className="bg-gradient-to-r from-slate-900 via-black to-slate-900 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
           >
             Get Your Quote Now!
           </button>

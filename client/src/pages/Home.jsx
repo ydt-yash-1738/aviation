@@ -7,8 +7,7 @@ const Home = () => {
     const isAuthenticated = auth !== null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black opacity-40"></div>
+        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center ">
             <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
                 <div className="mb-8">
                     <div className="w-32 h-32 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full mx-auto mb-6 flex items-center justify-center shadow-2xl">
