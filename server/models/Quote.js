@@ -1,4 +1,4 @@
-// models/QuickQuote.js
+// models/Quote.js
 import mongoose from 'mongoose';
 
 const quoteSchema = new mongoose.Schema({
@@ -30,6 +30,10 @@ const quoteSchema = new mongoose.Schema({
     default: '',
   },
   insuredLastName: {
+    type: String,
+    required: true,
+  },
+  insuredEmail: {
     type: String,
     required: true,
   },
@@ -87,10 +91,10 @@ const quoteSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  insuredUserId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'InsuredUserId',
+  quoteRef: {
+    type: String,
     required: true,
+    unique: true,
   },
 }, {
   collection: 'quote'

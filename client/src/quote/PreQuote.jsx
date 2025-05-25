@@ -1,8 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
-import axios from 'axios';
-
 
 const certificateRatings = [
     { value: 'Student', label: 'Student' },
@@ -55,16 +53,54 @@ const customStyles = {
 
 const PreQuote = () => {
     const navigate = useNavigate();
+    const [quoteSaved, setQuoteSaved] = useState(false);
 
-    // For react-select, store the selected option objects, or null if nothing selected
     const [form, setForm] = useState({
         certificateRatings: null,
-        instrumentrating: null,
-        overallhrs: null,
-        twelvemonthshrs: null,
+        instrumentRating: null,
+        overallHours: '',
+        twelveMonthsHours: '',
     });
 
-    // Handle react-select changes: set selected option object (or null)
+    useEffect(() => {
+        const savedPreQuoteData = localStorage.getItem('preQuoteFormData');
+        if (savedPreQuoteData) {
+            try {
+                const parsedData = JSON.parse(savedPreQuoteData);
+                if (parsedData.certificateRatings) {
+                    parsedData.certificateRatings = certificateRatings.find(opt => opt.value === parsedData.certificateRatings) || null;
+                }
+                if (parsedData.instrumentRating) {
+                    parsedData.instrumentRating = yesNoOptions.find(opt => opt.value === parsedData.instrumentRating) || null;
+                }
+                setForm({
+                    certificateRatings: parsedData.certificateRatings,
+                    instrumentRating: parsedData.instrumentRating,
+                    overallHours: parsedData.overallHours || '',
+                    twelveMonthsHours: parsedData.twelveMonthsHours || '',
+                });
+            } catch (error) {
+                console.error('Error loading saved pre quote data:', error);
+            }
+        }
+
+        // Check if quote was already saved
+        const savedQuoteRef = localStorage.getItem('savedQuoteRef');
+        if (savedQuoteRef) {
+            setQuoteSaved(true);
+        }
+    }, []);
+
+    useEffect(() => {
+        const dataToSave = {
+            certificateRatings: form.certificateRatings ? form.certificateRatings.value : null,
+            instrumentRating: form.instrumentRating ? form.instrumentRating.value : null,
+            overallHours: form.overallHours,
+            twelveMonthsHours: form.twelveMonthsHours,
+        };
+        localStorage.setItem('preQuoteFormData', JSON.stringify(dataToSave));
+    }, [form]);
+
     const handleSelectChange = (selectedOption, actionMeta) => {
         setForm((prev) => ({
             ...prev,
@@ -72,75 +108,70 @@ const PreQuote = () => {
         }));
     };
 
-    // Handle native inputs (hrs)
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleNext = async () => {
-        if (!form.certificateRatings || !form.instrumentrating || !form.overallhrs || !form.twelvemonthshrs) {
-            alert('Please fill in all fields');
-            return;
-        }
-
-        try {
-            const res = await axios.post('/api/quickquote/update-pilot-info', {
-                certificateRatings: form.certificateRatings.value,
-                instrumentRating: form.instrumentrating.value,
-                overallHours: Number(form.overallhrs),
-                twelveMonthsHours: Number(form.twelvemonthshrs),
-                // quoteRef: localStorage.getItem('quoteRef'), // or however you're storing the quote reference
-            });
-
-            console.log('Pilot info updated:', res.data);
-            navigate('/display/quotedisplay');
-        } catch (err) {
-            console.error('Failed to update pilot info', err);
-            alert('Something went wrong!');
-        }
-    };
-
     const handleSave = async () => {
-        if (!form.certificateRatings || !form.instrumentrating || !form.overallhrs || !form.twelvemonthshrs) {
+        if (!form.certificateRatings || !form.instrumentRating || !form.overallHours || !form.twelveMonthsHours) {
             alert('Please fill in all fields');
             return;
         }
 
-        const storedData = JSON.parse(localStorage.getItem('quickQuoteData'));
-        const finalQuote = {
-            ...storedData,
-            certificateRatings: form.certificateRatings.value,
-            instrumentRating: form.instrumentrating.value,
-            overallHrs: parseInt(form.overallhrs),
-            twelveMonthsHrs: parseInt(form.twelvemonthshrs),
-        };
-
         try {
+            const partialDataStr = localStorage.getItem('partialQuoteData');
+
+            if (!partialDataStr) {
+                alert('No preliminary data found. Please start from the beginning.');
+                navigate('/quote/quick');
+                return;
+            }
+
+            const partialData = JSON.parse(partialDataStr);
+
+            const completeQuoteData = {
+                ...partialData,
+                certificateRatings: form.certificateRatings.value,
+                instrumentRating: form.instrumentRating.value,
+                overallHours: parseInt(form.overallHours),
+                twelveMonthsHours: parseInt(form.twelveMonthsHours),
+            };
+
+            console.log("Complete quote data being sent:", completeQuoteData);
+
             const response = await fetch('http://localhost:5000/api/quote', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(finalQuote),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(completeQuoteData),
             });
 
             const result = await response.json();
+
             if (response.ok) {
                 alert('Quote saved successfully');
-                localStorage.removeItem('quoteData');
-                navigate('/display/quotedisplay');
+                localStorage.setItem('savedQuoteRef', result.quote.quoteRef);
+                localStorage.setItem('completedQuoteData', JSON.stringify(completeQuoteData));
+                setQuoteSaved(true);
             } else {
-                alert(`Failed to save quote: ${result.message}`);
+                console.error('Server error:', result);
+                alert(`Failed to save quote: ${result.message || 'Unknown error'}`);
+                if (result.errors) {
+                    console.error('Validation errors:', result.errors);
+                }
             }
         } catch (err) {
-            alert('Error saving quote');
-            console.error(err);
+            console.error('Network/parsing error:', err);
+            alert('Error saving quote. Please check your connection and try again.');
         }
     };
 
+    const handleContinue = () => {
+        navigate('/display/quotedisplay');
+    };
 
     const handlePrevious = () => {
-        // Example: validation or form processing here
-        // To get raw values, you can access form.aircraftType?.value etc.
-
         navigate('/quote/quick');
     };
 
@@ -153,9 +184,9 @@ const PreQuote = () => {
                 <div className="space-y-6">
                     {/* Certificate and Ratings */}
                     <div>
-                        <label className="block mb-2 font-semibold">Certificate and Ratings</label>
+                        <label className="block mb-2 font-semibold">Certificate and Ratings *</label>
                         <Select
-                            name="CertificateRatings"
+                            name="certificateRatings"
                             options={certificateRatings}
                             value={form.certificateRatings}
                             onChange={handleSelectChange}
@@ -167,11 +198,11 @@ const PreQuote = () => {
 
                     {/* Instrument Rating */}
                     <div>
-                        <label className="block mb-2 font-semibold">Instrument Rating</label>
+                        <label className="block mb-2 font-semibold">Instrument Rating *</label>
                         <Select
-                            name="InstrumentRating"
+                            name="instrumentRating"
                             options={yesNoOptions}
-                            value={form.instrumentrating}
+                            value={form.instrumentRating}
                             onChange={handleSelectChange}
                             styles={customStyles}
                             placeholder="Select Yes or No"
@@ -181,65 +212,65 @@ const PreQuote = () => {
 
                     {/* Total Hours all Aircraft */}
                     <div>
-                        <label className="block mb-2 font-semibold">Total Hours all Aircraft</label>
+                        <label className="block mb-2 font-semibold">Total Hours all Aircraft *</label>
                         <input
                             type="number"
-                            name="overallhrs"
-                            value={form.overallhrs}
+                            name="overallHours"
+                            value={form.overallHours}
                             onChange={handleChange}
                             className="w-full rounded-xl bg-white bg-opacity-10 backdrop-blur-md text-white p-2 border border-white border-opacity-20 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             placeholder="Enter total flight hours"
                             min="0"
                             step="1"
+                            required
                         />
                     </div>
 
-
                     {/* Total Hours Last 12 Months */}
                     <div>
-                        <label className="block mb-2 font-semibold">Total Hours Last 12 Months</label>
+                        <label className="block mb-2 font-semibold">Total Hours Last 12 Months *</label>
                         <input
                             type="number"
-                            name="twelvemonthshrs"
-                            value={form.twelvemonthshrs}
+                            name="twelveMonthsHours"
+                            value={form.twelveMonthsHours}
                             onChange={handleChange}
                             className="w-full rounded-xl bg-white bg-opacity-10 backdrop-blur-md text-white p-2 border border-white border-opacity-20 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             placeholder="Enter hours flown in the last 12 months"
                             min="0"
                             step="1"
+                            required
                         />
                     </div>
-
                 </div>
+
                 <div className="mt-10 flex justify-center items-center gap-4">
                     {/* Previous Button */}
-                    <div className="mt-10 text-center">
-                        <button
-                            onClick={handlePrevious}
-                            className="bg-indigo-900 hover:to-purple-900 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                        >
-                            Previous
-                        </button>
-                    </div>
-                    {/*Save */}
-                    <div className="mt-10 text-center">
+                    <button
+                        onClick={handlePrevious}
+                        className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                    >
+                        Previous
+                    </button>
+
+                    {/* Save Button - only show if quote not saved yet */}
+                    {!quoteSaved && (
                         <button
                             onClick={handleSave}
                             className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                         >
                             Save
                         </button>
+                    )}
 
-                    </div>
-                    {/* Next Button */}
-                    <div className="mt-10 text-center">
+                    {/* Continue Button - only show after quote is saved */}
+                    {quoteSaved && (
                         <button
-                            onClick={handleNext}
-                            className="bg-indigo-900 hover:to-purple-900 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                            onClick={handleContinue}
+                            className="bg-indigo-900 hover:bg-indigo-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                         >
-                            Next
+                            Continue
                         </button>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

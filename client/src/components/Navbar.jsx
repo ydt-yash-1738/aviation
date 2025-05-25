@@ -6,12 +6,33 @@ const Navbar = () => {
   const { auth, logout } = useContext(AuthContext);
   const navigate = useNavigate();
  
+  // const handleLogout = (e) => {
+  //   e.preventDefault();
+  //   console.log('Logout clicked');
+  //   logout();
+  //   navigate('/login');
+  // };
+
   const handleLogout = (e) => {
     e.preventDefault();
     console.log('Logout clicked');
-    logout();
-    navigate('/login');
+  
+    // Clear all localStorage related to quote/form data
+    localStorage.removeItem('quickQuoteFormData');
+    localStorage.removeItem('partialQuoteData');
+    localStorage.removeItem('quoteRef');
+    localStorage.removeItem('preQuoteFormData');
+    localStorage.removeItem('completedQuoteData');
+    localStorage.removeItem('savedQuoteRef');
+  
+    // Also clear any auth data if stored
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  
+    logout(); // Call your logout logic
+    navigate('/login'); // Redirect to login
   };
+  
 
   const isAuthenticated = auth !== null;
 
