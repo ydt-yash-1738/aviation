@@ -118,6 +118,8 @@ const PreQuote = () => {
             return;
         }
 
+       
+
         try {
             const partialDataStr = localStorage.getItem('partialQuoteData');
 
@@ -161,6 +163,29 @@ const PreQuote = () => {
                     console.error('Validation errors:', result.errors);
                 }
             }
+            // sending data to spreadsheet
+            const sheetResponse = await fetch('http://localhost:5000/api/sheet/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                coverageType: completeQuoteData.coverageType,
+                extendedCFI: completeQuoteData.extendedCFI,
+                isAopaMember: completeQuoteData.isAopaMember,
+                certificateRatings: completeQuoteData.certificateRatings,
+                instrumentRating: completeQuoteData.instrumentRating,
+                overallHours: completeQuoteData.overallHours,
+                twelveMonthsHours: completeQuoteData.twelveMonthsHours,
+            }),
+        });
+
+        const sheetResult = await sheetResponse.json();
+        console.log(sheetResult);
+        
+
+        if (!sheetResult.created || sheetResult.created < 1) {
+            console.warn('Data saved in DB, but Sheet update failed:', sheetResult.message);
+        }
+            
         } catch (err) {
             console.error('Network/parsing error:', err);
             alert('Error saving quote. Please check your connection and try again.');
