@@ -84,7 +84,7 @@ const QuoteDisplay = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center">
+            <div className="min-h-screen bg-[#1A2C47] flex items-center justify-center">
                 <div className="text-white text-xl">Loading quote...</div>
             </div>
         );
@@ -92,7 +92,7 @@ const QuoteDisplay = () => {
 
     if (!quoteData) {
         return (
-            <div className="min-h-screen bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center">
+            <div className="min-h-screen bg-[#1A2C47] flex items-center justify-center">
                 <motion.div
                     initial="hidden"
                     animate="visible"
@@ -115,7 +115,7 @@ const QuoteDisplay = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 py-8 px-4">
+        <div className="min-h-screen bg-[#1A2C47] py-8 px-4">
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -126,7 +126,7 @@ const QuoteDisplay = () => {
                     initial="hidden"
                     animate="visible"
                     variants={fadeIn}
-                    className="relative z-10 bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 text-white p-8"
+                    className="relative z-10 bg-[#144074] bg-opacity-40 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 text-white p-8"
                 >
                     <motion.h1
                         initial={{ scale: 0.95, opacity: 0 }}
@@ -270,7 +270,7 @@ const QuoteDisplay = () => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={handleProceedToBuy}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
+                            className="bg-teal-600 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
                         >
                             Proceed to Buy
                         </motion.button>

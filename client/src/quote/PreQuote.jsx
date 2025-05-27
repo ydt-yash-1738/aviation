@@ -37,7 +37,7 @@ const customStyles = {
     }),
     option: (provided, state) => ({
         ...provided,
-        backgroundColor: state.isFocused ? '#065f46' : 'transparent',
+        backgroundColor: state.isFocused ? '#03B7B7' : 'transparent',
         color: 'white',
         cursor: 'pointer',
     }),
@@ -189,8 +189,8 @@ const PreQuote = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center">
-            <div className="relative z-10 max-w-xl w-full p-8 mt-5 mb-5 bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 text-white">
+        <div className="min-h-screen bg-[#1A2C47] flex items-center justify-center">
+            <div className="relative z-10 max-w-xl w-full p-8 mt-5 mb-5 bg-[#144074] bg-opacity-40 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 text-white">
                 <h1 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                     Pilot Information
                 </h1>
@@ -260,14 +260,14 @@ const PreQuote = () => {
                     {/* Previous Button */}
                     <button
                         onClick={handlePrevious}
-                        className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                        className="bg-[#144074] text-white hover:bg-[#03B7B7] hover:text-[#1A2C47] transition-colors duration-200 border-4 border-[#03B7B7] font-semibold py-3 px-4 rounded-3xl transform hover:scale-105 transition-all duration-300 shadow-lg"
                     >
                         Previous
                     </button>
 
                     <button
                         onClick={handleContinue}
-                        className="bg-indigo-900 hover:bg-indigo-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                        className="bg-[#144074] text-white hover:bg-[#03B7B7] hover:text-[#1A2C47] transition-colors duration-200 border-4 border-[#03B7B7] font-semibold py-3 px-4 rounded-3xl transform hover:scale-105 transition-all duration-300 shadow-lg"
                     >
                         Continue
                     </button>
