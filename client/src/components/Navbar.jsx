@@ -51,7 +51,7 @@ const Navbar = () => {
               style={{ textDecoration: 'none' }}
             >
               <div className="relative">
-                <div className="w-10 h-10 bg-[#03B7B7] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300">
+                <div className="w-10 h-10 bg-[#03B7B7] rounded-xl flex items-center justify-center shadow-lg transition-all duration-300">
 
                   <svg className="w-6 h-6 text-white pointer-events-none" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M2.5 19L3 20l8.5-5V22h1v-7l8.5 5 .5-1L13 12l9-7.5-.5-1-8.5 5V2h-1v7.5L3 3l-.5 1L11 12 2.5 19z" />
@@ -86,7 +86,7 @@ const Navbar = () => {
                   style={{ textDecoration: 'none' }}
                 >
                   Dashboard
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500 group-hover:w-full transition-all duration-300 pointer-events-none"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#00CCFF] group-hover:w-full transition-all duration-300 pointer-events-none"></span>
                 </Link>
                 <Link
                   to="/profile"
@@ -94,7 +94,7 @@ const Navbar = () => {
                   style={{ textDecoration: 'none' }}
                 >
                   Profile
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500 group-hover:w-full transition-all duration-300 pointer-events-none"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#00CCFF] group-hover:w-full transition-all duration-300 pointer-events-none"></span>
                 </Link>
               </>
             )}
@@ -106,7 +106,7 @@ const Navbar = () => {
               <div className="flex items-center space-x-4">
                 {/* User Info */}
                 <div className="hidden sm:flex items-center space-x-3 pointer-events-none">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-[#03B7B7] rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-semibold">
                       {auth?.user.firstName ? auth.user.firstName.charAt(0).toUpperCase() : 'U'}
                     </span>
@@ -115,7 +115,7 @@ const Navbar = () => {
                     <p className="text-sm text-white font-medium">
                       {auth?.user.firstName || 'User'}
                     </p>
-                    <p className="text-xs text-purple-300">
+                    <p className="text-xs text-white">
                       {auth?.user.email || 'Welcome back!'}
                     </p>
                   </div>
@@ -124,9 +124,8 @@ const Navbar = () => {
                 {/* Logout Button */}
                 <button
                   onClick={handleLogout}
-                  className="group relative px-6 py-2 bg-gradient-to-br from-yellow-300 via-yellow-500 to-amber-600 text-white font-medium text-sm rounded-full hover:from-red-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-red-400/50 focus:ring-offset-2 focus:ring-offset-slate-900 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-red-500/25 cursor-pointer"
+                  className="group relative px-6 py-2 bg-[#144074] text-white hover:bg-[#03B7B7] hover:text-[#1A2C47] transition-colors duration-200 border-2 border-[#03B7B7] font-semibold text-white font-medium text-sm rounded-full transform hover:scale-105 transition-all duration-200 cursor-pointer"
                   type="button"
-                  style={{ border: 'none', outline: 'none' }}
                 >
                   <span className="flex items-center space-x-2 pointer-events-none">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,7 +147,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/login"
-                  className="group relative px-6 py-2 bg-[#144074] text-white hover:bg-[#03B7B7] hover:text-[#1A2C47] transition-colors duration-200 border-4 border-[#03B7B7] font-semibold text-white font-medium text-sm rounded-full transform hover:scale-105 transition-all duration-200 cursor-pointer"
+                  className="group relative px-6 py-2 bg-[#144074] text-white hover:bg-[#03B7B7] hover:text-[#1A2C47] transition-colors duration-200 border-2 border-[#03B7B7] font-semibold text-white font-medium text-sm rounded-full transform hover:scale-105 transition-all duration-200 cursor-pointer"
                   style={{ textDecoration: 'none' }}
                 >
                   <span className="flex items-center space-x-2 pointer-events-none">

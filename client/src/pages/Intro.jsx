@@ -4,10 +4,10 @@ const Intro = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-slate-900 via-fuchsia-900 to-slate-900 flex items-center justify-center">
+    <div className="min-h-screen bg-[#1A2C47] flex items-center justify-center">
       <div className="relative z-10 text-center max-w-2xl mx-auto px-4 mt-5 mb-5">
-        <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 p-12">
-          <div className="w-24 h-24 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 rounded-full mx-auto mb-6 flex items-center justify-center shadow-2xl">
+        <div className="bg-[#144074] bg-opacity-40 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 p-12">
+          <div className="w-24 h-24 bg-[#03B7B7] rounded-full mx-auto mb-6 flex items-center justify-center shadow-2xl">
             <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
@@ -54,7 +54,7 @@ const Intro = () => {
           </div>
           <button
             onClick={() => navigate('/quote/quick')}
-            className="bg-gradient-to-r from-slate-900 via-black to-slate-900 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            className="bg-[#144074] text-white hover:bg-[#03B7B7] hover:text-[#1A2C47] transition-colors duration-200 border-4 border-[#03B7B7] font-semibold py-3 px-4 rounded-3xl transform hover:scale-105 transition-all duration-300 shadow-lg"
           >
             Get Your Quote Now!
           </button>

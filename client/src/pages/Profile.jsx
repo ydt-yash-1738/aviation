@@ -29,7 +29,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-[#1A2C47] py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -39,14 +39,13 @@ const Profile = () => {
           <p className="text-gray-400">Manage your account information and preferences</p>
         </div>
 
-        {/* Main Profile Card */}
-        <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 overflow-hidden">
+       
+        
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-12 text-center relative">
-            <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+          <div className="bg-[#144074] bg-opacity-40 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 p-12">
             <div className="relative z-10">
-              <div className="w-32 h-32 bg-gradient-to-br from-white to-gray-200 rounded-full mx-auto mb-6 flex items-center justify-center shadow-2xl">
-                <span className="text-4xl font-bold text-purple-600">
+              <div className="w-32 h-32 bg-[#03B7B7] rounded-full mx-auto mb-6 flex items-center justify-center shadow-2xl">
+                <span className="text-4xl font-bold text-white">
                   {getInitials()}
                 </span>
               </div>
@@ -54,7 +53,7 @@ const Profile = () => {
                 {auth.user.firstName} {auth.user.lastName}
               </h2>
               <p className="text-purple-100 mb-4">{auth.user.email}</p>
-              <div className="inline-flex items-center bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-4 py-2">
+              <div className="inline-flex items-center bg-[#03B7B7] bg-opacity-20 backdrop-blur-sm rounded-full px-4 py-2">
                 <svg className="w-4 h-4 text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h8m-8 0l1.5 5.5a3 3 0 003 3h3a3 3 0 003-3L18 7H6z"></path>
                 </svg>
@@ -62,12 +61,12 @@ const Profile = () => {
               </div>
             </div>
           </div>
-        </div>
+  
 
         {/* Activity Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-20 text-center">
-            <div className="w-12 h-12 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 rounded-full mx-auto mb-4 flex items-center justify-center">
+          <div className="bg-[#144074] bg-opacity-40 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-20 text-center">
+            <div className="w-12 h-12 bg-[#03B7B7] rounded-full mx-auto mb-4 flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
@@ -76,8 +75,8 @@ const Profile = () => {
             <p className="text-gray-300 text-sm">Account Status</p>
           </div>
 
-          <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-20 text-center">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full mx-auto mb-4 flex items-center justify-center">
+          <div className="bg-[#144074] bg-opacity-40 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-20 text-center">
+            <div className="w-12 h-12 bg-[#03B7B7] rounded-full mx-auto mb-4 flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
               </svg>
@@ -86,8 +85,8 @@ const Profile = () => {
             <p className="text-gray-300 text-sm">Security Level</p>
           </div>
 
-          <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-20 text-center">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mx-auto mb-4 flex items-center justify-center">
+          <div className="bg-[#144074] bg-opacity-40 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-20 text-center">
+            <div className="w-12 h-12 bg-[#03B7B7] rounded-full mx-auto mb-4 flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
               </svg>
