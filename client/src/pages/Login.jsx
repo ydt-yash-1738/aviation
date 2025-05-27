@@ -22,11 +22,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#1A2C47] flex items-center justify-center p-4">
       <div className="relative z-10 w-full max-w-md">
-        <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 p-8">
+        <div className="bg-[#144074] bg-opacity-40 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 p-8">
           <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <div className="w-20 h-20 bg-[#03B7B7] rounded-full mx-auto mb-4 flex items-center justify-center">
               <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
               </svg>
@@ -72,18 +72,18 @@ const Login = () => {
 
             <button 
               type="submit" 
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-4 rounded-xl hover:from-purple-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-900 transform hover:scale-105 transition-all duration-300 shadow-lg"
+              className="w-full bg-[#144074] text-white hover:bg-[#03B7B7] hover:text-[#1A2C47] transition-colors duration-200 border-4 border-[#03B7B7] font-semibold py-3 px-4 rounded-3xl transform hover:scale-105 transition-all duration-300 shadow-lg"
             >
               Sign In
             </button>
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-gray-300">
+            <p className="text-white">
               New to our platform?{' '}
               <Link 
                 to="/register" 
-                className="text-purple-400 hover:text-purple-300 font-semibold transition-colors duration-300 hover:underline"
+                className="text-white hover:text-[#03B7B7] font-semibold transition-colors duration-300 hover:underline"
               >
                 Create an account
               </Link>
