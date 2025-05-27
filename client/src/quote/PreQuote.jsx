@@ -112,13 +112,91 @@ const PreQuote = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    // const handleSave = async () => {
+    //     if (!form.certificateRatings || !form.instrumentRating || !form.overallHours || !form.twelveMonthsHours) {
+    //         alert('Please fill in all fields');
+    //         return;
+    //     }
+
+
+
+    //     try {
+    //         const partialDataStr = localStorage.getItem('partialQuoteData');
+
+    //         if (!partialDataStr) {
+    //             alert('No preliminary data found. Please start from the beginning.');
+    //             navigate('/quote/quick');
+    //             return;
+    //         }
+
+    //         const partialData = JSON.parse(partialDataStr);
+
+    //         const completeQuoteData = {
+    //             ...partialData,
+    //             certificateRatings: form.certificateRatings.value,
+    //             instrumentRating: form.instrumentRating.value,
+    //             overallHours: parseInt(form.overallHours),
+    //             twelveMonthsHours: parseInt(form.twelveMonthsHours),
+    //         };
+
+    //         console.log("Complete quote data being sent:", completeQuoteData);
+
+    //         const response = await fetch('http://localhost:5000/api/quote', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(completeQuoteData),
+    //         });
+
+    //         const result = await response.json();
+
+    //         if (response.ok) {
+    //             alert('Quote saved successfully');
+    //             localStorage.setItem('savedQuoteRef', result.quote.quoteRef);
+    //             localStorage.setItem('completedQuoteData', JSON.stringify(completeQuoteData));
+    //             setQuoteSaved(true);
+    //         } else {
+    //             console.error('Server error:', result);
+    //             alert(`Failed to save quote: ${result.message || 'Unknown error'}`);
+    //             if (result.errors) {
+    //                 console.error('Validation errors:', result.errors);
+    //             }
+    //         }
+    //         // sending data to spreadsheet
+    //         const sheetResponse = await fetch('http://localhost:5000/api/sheet/submit', {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify({
+    //             coverageType: completeQuoteData.coverageType,
+    //             extendedCFI: completeQuoteData.extendedCFI,
+    //             isAopaMember: completeQuoteData.isAopaMember,
+    //             certificateRatings: completeQuoteData.certificateRatings,
+    //             instrumentRating: completeQuoteData.instrumentRating,
+    //             overallHours: completeQuoteData.overallHours,
+    //             twelveMonthsHours: completeQuoteData.twelveMonthsHours,
+    //         }),
+    //     });
+
+    //     const sheetResult = await sheetResponse.json();
+    //     console.log(sheetResult);
+
+
+    //     if (!sheetResult.created || sheetResult.created < 1) {
+    //         console.warn('Data saved in DB, but Sheet update failed:', sheetResult.message);
+    //     }
+
+    //     } catch (err) {
+    //         console.error('Network/parsing error:', err);
+    //         alert('Error saving quote. Please check your connection and try again.');
+    //     }
+    // };
+
     const handleSave = async () => {
         if (!form.certificateRatings || !form.instrumentRating || !form.overallHours || !form.twelveMonthsHours) {
             alert('Please fill in all fields');
             return;
         }
-
-       
 
         try {
             const partialDataStr = localStorage.getItem('partialQuoteData');
@@ -141,56 +219,67 @@ const PreQuote = () => {
 
             console.log("Complete quote data being sent:", completeQuoteData);
 
+            //Send to Google Sheets FIRST to get premium
+            const sheetResponse = await fetch('http://localhost:5000/api/sheet/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    coverageType: completeQuoteData.coverageType,
+                    extendedCFI: completeQuoteData.extendedCFI,
+                    isAopaMember: completeQuoteData.isAopaMember,
+                    certificateRatings: completeQuoteData.certificateRatings,
+                    instrumentRating: completeQuoteData.instrumentRating,
+                    overallHours: completeQuoteData.overallHours,
+                    twelveMonthsHours: completeQuoteData.twelveMonthsHours,
+                }),
+            });
+
+            const sheetResult = await sheetResponse.json();
+
+            if (!sheetResult || sheetResult.status !== 'success') {
+                console.warn('Failed to calculate premium:', sheetResult.message);
+                alert('Failed to calculate premium');
+                return;
+            }
+
+            const premium = sheetResult.premium;
+
+            //Add premium to the quote data
+            const finalQuoteData = {
+                ...completeQuoteData,
+                premium,
+                premiumBreakdown: sheetResult.breakdown, // optional: store breakdown too
+            };
+
+            //Save final quote to your DB with premium included
             const response = await fetch('http://localhost:5000/api/quote', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(completeQuoteData),
+                body: JSON.stringify(finalQuoteData),
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                alert('Quote saved successfully');
+                alert('Quote saved successfully with premium');
                 localStorage.setItem('savedQuoteRef', result.quote.quoteRef);
-                localStorage.setItem('completedQuoteData', JSON.stringify(completeQuoteData));
+                localStorage.setItem('completedQuoteData', JSON.stringify(finalQuoteData));
                 setQuoteSaved(true);
+                // optionally navigate to display
+                navigate('/display/quotedisplay', { state: { premiumResult: sheetResult } });
             } else {
                 console.error('Server error:', result);
                 alert(`Failed to save quote: ${result.message || 'Unknown error'}`);
-                if (result.errors) {
-                    console.error('Validation errors:', result.errors);
-                }
             }
-            // sending data to spreadsheet
-            const sheetResponse = await fetch('http://localhost:5000/api/sheet/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                coverageType: completeQuoteData.coverageType,
-                extendedCFI: completeQuoteData.extendedCFI,
-                isAopaMember: completeQuoteData.isAopaMember,
-                certificateRatings: completeQuoteData.certificateRatings,
-                instrumentRating: completeQuoteData.instrumentRating,
-                overallHours: completeQuoteData.overallHours,
-                twelveMonthsHours: completeQuoteData.twelveMonthsHours,
-            }),
-        });
 
-        const sheetResult = await sheetResponse.json();
-        console.log(sheetResult);
-        
-
-        if (!sheetResult.created || sheetResult.created < 1) {
-            console.warn('Data saved in DB, but Sheet update failed:', sheetResult.message);
-        }
-            
         } catch (err) {
             console.error('Network/parsing error:', err);
             alert('Error saving quote. Please check your connection and try again.');
         }
     };
+
 
     const handleContinue = () => {
         navigate('/display/quotedisplay');

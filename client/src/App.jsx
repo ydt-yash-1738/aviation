@@ -10,10 +10,12 @@ import Profile from './pages/Profile';
 import QuickQuote from './quote/QuickQuote';
 import PreQuote from './quote/PreQuote';
 import QuoteDisplay from './display/QuoteDisplay';
+import ScrollToTop from './utils/ScrollToTop';
 
 const App = () => (
   <AuthProvider>
     <BrowserRouter>
+      <ScrollToTop/>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

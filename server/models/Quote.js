@@ -96,6 +96,14 @@ const quoteSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  premium: {
+    type: Number,
+    required: false
+  },
+  premiumBreakdown: {
+    type: Object,
+    required: false
+  },
 }, {
   collection: 'quote'
 });

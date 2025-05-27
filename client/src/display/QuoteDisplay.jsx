@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
+const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i = 0) => ({
+        opacity: 1,
+        y: 0,
+        transition: { delay: i * 0.2, duration: 0.6 },
+    }),
+};
 
 const QuoteDisplay = () => {
     const navigate = useNavigate();
@@ -8,10 +18,9 @@ const QuoteDisplay = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Load saved quote data
         const savedQuoteData = localStorage.getItem('completedQuoteData');
         const savedQuoteRef = localStorage.getItem('savedQuoteRef');
-        
+
         if (savedQuoteData && savedQuoteRef) {
             try {
                 const parsedData = JSON.parse(savedQuoteData);
@@ -21,7 +30,7 @@ const QuoteDisplay = () => {
                 console.error('Error loading quote data:', error);
             }
         }
-        
+
         setLoading(false);
     }, []);
 
@@ -29,14 +38,6 @@ const QuoteDisplay = () => {
         navigate('/quote/pre');
     };
 
-    const handleNewQuote = () => {
-        // Clear stored data and start fresh
-        localStorage.removeItem('completedQuoteData');
-        localStorage.removeItem('savedQuoteRef');
-        localStorage.removeItem('preQuoteFormData');
-        localStorage.removeItem('partialQuoteData');
-        navigate('/quote/quick');
-    };
 
     if (loading) {
         return (
@@ -49,186 +50,190 @@ const QuoteDisplay = () => {
     if (!quoteData) {
         return (
             <div className="min-h-screen bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center">
-                <div className="relative z-10 max-w-xl w-full p-8 bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 text-white text-center">
+                <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    variants={fadeIn}
+                    className="relative z-10 max-w-xl w-full p-8 bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 text-white text-center"
+                >
                     <h1 className="text-3xl font-bold mb-4">No Quote Found</h1>
                     <p className="mb-6">No quote data available. Please create a new quote.</p>
-                    <button
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={handleNewQuote}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
                     >
                         Create New Quote
-                    </button>
-                </div>
+                    </motion.button>
+                </motion.div>
             </div>
         );
     }
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 py-8 px-4">
-            <div className="max-w-4xl mx-auto">
-                <div className="relative z-10 bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 text-white p-8">
-                    <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                        Aviation Insurance Quote
-                    </h1>
-                    
-                    {/* Quote Reference */}
-                    <div className="text-center mb-8">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                className="max-w-4xl mx-auto"
+            >
+                <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    variants={fadeIn}
+                    className="relative z-10 bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white border-opacity-20 text-white p-8"
+                >
+                    <motion.h1
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent"
+                    >
+                        Skyline Insurance Quote
+                    </motion.h1>
+
+                    <motion.div
+                        custom={1}
+                        variants={fadeIn}
+                        initial="hidden"
+                        animate="visible"
+                        className="text-center mb-8"
+                    >
                         <div className="inline-block bg-emerald-600 bg-opacity-20 backdrop-blur-md rounded-xl px-6 py-3 border border-emerald-400 border-opacity-30">
                             <span className="text-emerald-300 font-semibold">Quote Reference: </span>
                             <span className="text-white font-bold text-lg">{quoteRef}</span>
                         </div>
-                    </div>
+                    </motion.div>
 
-                    {/* Total Premium Section */}
-                    <div className="mb-8 p-6 bg-gradient-to-r from-emerald-500 to-teal-600 bg-opacity-20 backdrop-blur-md rounded-2xl border border-emerald-400 border-opacity-30">
+                    <motion.div
+                        custom={2}
+                        variants={fadeIn}
+                        initial="hidden"
+                        animate="visible"
+                        className="mb-8 p-6 bg-gradient-to-r from-emerald-500 to-teal-600 bg-opacity-20 backdrop-blur-md rounded-2xl border border-emerald-400 border-opacity-30"
+                    >
                         <h2 className="text-2xl font-bold text-center mb-4 text-emerald-300">Total Premium</h2>
                         <div className="text-center">
                             <div className="text-4xl font-bold text-white bg-white bg-opacity-10 backdrop-blur-md rounded-xl py-4 px-8 inline-block border border-white border-opacity-20">
-                                TBD
+                                ${quoteData.premium ? quoteData.premium.toFixed(2) : 'N/A'}
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
 
                     <div className="grid md:grid-cols-2 gap-8">
-                        {/* Personal Information */}
-                        <div className="space-y-6">
-                            <div className="bg-white bg-opacity-5 backdrop-blur-md rounded-2xl p-6 border border-white border-opacity-10">
+                        {[ // Wrap both personal and address in animations
+                            {
+                                title: 'Personal Information',
+                                items: [
+                                    ['First Name', quoteData.insuredFirstName],
+                                    ['Middle Name', quoteData.insuredMiddleName],
+                                    ['Last Name', quoteData.insuredLastName],
+                                    ['Email', quoteData.insuredEmail],
+                                    ['Age', quoteData.age],
+                                ].filter(item => item[1]),
+                            },
+                            {
+                                title: 'Address',
+                                items: [
+                                    ['Address Line 1', quoteData.insuredAddressLineOne],
+                                    ['Address Line 2', quoteData.insuredAddressLineTwo],
+                                    ['City', quoteData.insuredCity],
+                                    ['State', quoteData.insuredState],
+                                    ['Country', quoteData.insuredCountry],
+                                    ['ZIP Code', quoteData.insuredZIP],
+                                ].filter(item => item[1]),
+                            },
+                        ].map((section, i) => (
+                            <motion.div
+                                key={i}
+                                custom={i + 3}
+                                variants={fadeIn}
+                                initial="hidden"
+                                animate="visible"
+                                className="bg-white bg-opacity-5 backdrop-blur-md rounded-2xl p-6 border border-white border-opacity-10 space-y-3"
+                            >
                                 <h2 className="text-2xl font-bold mb-4 text-emerald-300 border-b border-emerald-400 border-opacity-30 pb-2">
-                                    Personal Information
+                                    {section.title}
                                 </h2>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">First Name:</span>
-                                        <span>{quoteData.insuredFirstName}</span>
+                                {section.items.map(([label, value]) => (
+                                    <div key={label} className="flex justify-between">
+                                        <span className="font-semibold text-gray-300">{label}:</span>
+                                        <span>{value}</span>
                                     </div>
-                                    {quoteData.insuredMiddleName && (
-                                        <div className="flex justify-between">
-                                            <span className="font-semibold text-gray-300">Middle Name:</span>
-                                            <span>{quoteData.insuredMiddleName}</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Last Name:</span>
-                                        <span>{quoteData.insuredLastName}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Email:</span>
-                                        <span>{quoteData.insuredEmail}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Age:</span>
-                                        <span>{quoteData.age}</span>
-                                    </div>
-                                </div>
-                            </div>
+                                ))}
+                            </motion.div>
+                        ))}
 
-                            {/* Address Information */}
-                            <div className="bg-white bg-opacity-5 backdrop-blur-md rounded-2xl p-6 border border-white border-opacity-10">
+                        {[ // Coverage and Pilot sections
+                            {
+                                title: 'Coverage Information',
+                                items: [
+                                    ['Effective Date', new Date(quoteData.effectiveDate).toLocaleDateString()],
+                                    ['Coverage Type', quoteData.coverageType],
+                                    ['Extended CFI', quoteData.extendedCFI],
+                                    ['AOPA Member', quoteData.isAopaMember],
+                                    ['Medical Allowance', '$10000'],
+                                ],
+                            },
+                            {
+                                title: 'Pilot Information',
+                                items: [
+                                    ['Certificate & Ratings', quoteData.certificateRatings],
+                                    ['Instrument Rating', quoteData.instrumentRating],
+                                    ['Total Hours (All Aircraft)', `${quoteData.overallHours} hours`],
+                                    ['Hours (Last 12 Months)', `${quoteData.twelveMonthsHours} hours`],
+                                ],
+                            },
+                        ].map((section, i) => (
+                            <motion.div
+                                key={i}
+                                custom={i + 5}
+                                variants={fadeIn}
+                                initial="hidden"
+                                animate="visible"
+                                className="bg-white bg-opacity-5 backdrop-blur-md rounded-2xl p-6 border border-white border-opacity-10 space-y-3"
+                            >
                                 <h2 className="text-2xl font-bold mb-4 text-emerald-300 border-b border-emerald-400 border-opacity-30 pb-2">
-                                    Address
+                                    {section.title}
                                 </h2>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Address Line 1:</span>
-                                        <span>{quoteData.insuredAddressLineOne}</span>
+                                {section.items.map(([label, value]) => (
+                                    <div key={label} className="flex justify-between">
+                                        <span className="font-semibold text-gray-300">{label}:</span>
+                                        <span>{value}</span>
                                     </div>
-                                    {quoteData.insuredAddressLineTwo && (
-                                        <div className="flex justify-between">
-                                            <span className="font-semibold text-gray-300">Address Line 2:</span>
-                                            <span>{quoteData.insuredAddressLineTwo}</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">City:</span>
-                                        <span>{quoteData.insuredCity}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">State:</span>
-                                        <span>{quoteData.insuredState}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Country:</span>
-                                        <span>{quoteData.insuredCountry}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">ZIP Code:</span>
-                                        <span>{quoteData.insuredZIP}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Coverage & Pilot Information */}
-                        <div className="space-y-6">
-                            {/* Coverage Information */}
-                            <div className="bg-white bg-opacity-5 backdrop-blur-md rounded-2xl p-6 border border-white border-opacity-10">
-                                <h2 className="text-2xl font-bold mb-4 text-emerald-300 border-b border-emerald-400 border-opacity-30 pb-2">
-                                    Coverage Information
-                                </h2>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Effective Date:</span>
-                                        <span>{new Date(quoteData.effectiveDate).toLocaleDateString()}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Coverage Type:</span>
-                                        <span>{quoteData.coverageType}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Extended CFI:</span>
-                                        <span>{quoteData.extendedCFI}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">AOPA Member:</span>
-                                        <span>{quoteData.isAopaMember}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Pilot Information */}
-                            <div className="bg-white bg-opacity-5 backdrop-blur-md rounded-2xl p-6 border border-white border-opacity-10">
-                                <h2 className="text-2xl font-bold mb-4 text-emerald-300 border-b border-emerald-400 border-opacity-30 pb-2">
-                                    Pilot Information
-                                </h2>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Certificate & Ratings:</span>
-                                        <span>{quoteData.certificateRatings}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Instrument Rating:</span>
-                                        <span>{quoteData.instrumentRating}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Total Hours (All Aircraft):</span>
-                                        <span>{quoteData.overallHours} hours</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-semibold text-gray-300">Hours (Last 12 Months):</span>
-                                        <span>{quoteData.twelveMonthsHours} hours</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                ))}
+                            </motion.div>
+                        ))}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="mt-10 flex justify-center items-center gap-4">
-                        <button
+                    <motion.div
+                        custom={7}
+                        variants={fadeIn}
+                        initial="hidden"
+                        animate="visible"
+                        className="mt-10 flex justify-center items-center gap-4"
+                    >
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={handleBack}
-                            className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                            className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
                         >
                             Back to Edit
-                        </button>
-                        <button
-                            onClick={handleNewQuote}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                        </motion.button>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            //onClick={handleNewQuote}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
                         >
-                            New Quote
-                        </button>
-                    </div>
-                </div>
-            </div>
+                            Proceed to Buy
+                        </motion.button>
+                    </motion.div>
+                </motion.div>
+            </motion.div>
         </div>
     );
 };

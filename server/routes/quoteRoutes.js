@@ -1,6 +1,8 @@
-// const express = require('express');
+// // quoteRoutes.js
+// import express from 'express';
+// import Quote from '../models/Quote.js'; // Note: include .js extension
+
 // const router = express.Router();
-// const Quote = require('../models/Quote.js'); 
 
 // // POST /api/quote - create a new quote
 // router.post('/', async (req, res) => {
@@ -28,17 +30,32 @@
 //     });
 //   } catch (error) {
 //     console.error('Error saving quote:', error);
+    
+//     // Handle Mongoose validation errors
+//     if (error.name === 'ValidationError') {
+//       const validationErrors = Object.values(error.errors).map(err => err.message);
+//       return res.status(400).json({ 
+//         message: 'Validation failed', 
+//         errors: validationErrors 
+//       });
+//     }
+    
+//     // Handle duplicate key errors (e.g., unique quoteRef)
+//     if (error.code === 11000) {
+//       return res.status(400).json({ 
+//         message: 'Duplicate quote reference. Please try again.' 
+//       });
+//     }
+    
 //     res.status(500).json({ message: 'Server error while saving quote' });
 //   }
 // });
 
-// module.exports = router;
-
-
+// export default router;
 
 // quoteRoutes.js
 import express from 'express';
-import Quote from '../models/Quote.js'; // Note: include .js extension
+import Quote from '../models/Quote.js';
 
 const router = express.Router();
 
@@ -47,29 +64,28 @@ router.post('/', async (req, res) => {
   try {
     const quoteData = req.body;
 
-    // Basic validation could go here, or rely on Mongoose validation
-    // if (!quoteData.insuredUserId) {
-    //   return res.status(400).json({ message: 'insuredUserId is required' });
-    // }
-
     if (!quoteData.quoteRef) {
       quoteData.quoteRef = 'SKYLINE-QR-' + Date.now();
     }
 
-    // Create new quote document
-    const newQuote = new Quote(quoteData);
+    // Log received premium to debug
+    console.log('Received premium:', quoteData.premium);
+    console.log('Received premium breakdown:', quoteData.premiumBreakdown);
 
-    // Save to DB
+    const newQuote = new Quote({
+      ...quoteData, // this includes premium and premiumBreakdown if sent from frontend
+    });
+
     const savedQuote = await newQuote.save();
 
     res.status(201).json({
       message: 'Quote saved successfully',
       quote: savedQuote,
     });
+
   } catch (error) {
     console.error('Error saving quote:', error);
-    
-    // Handle Mongoose validation errors
+
     if (error.name === 'ValidationError') {
       const validationErrors = Object.values(error.errors).map(err => err.message);
       return res.status(400).json({ 
@@ -77,14 +93,13 @@ router.post('/', async (req, res) => {
         errors: validationErrors 
       });
     }
-    
-    // Handle duplicate key errors (e.g., unique quoteRef)
+
     if (error.code === 11000) {
       return res.status(400).json({ 
         message: 'Duplicate quote reference. Please try again.' 
       });
     }
-    
+
     res.status(500).json({ message: 'Server error while saving quote' });
   }
 });
