@@ -16,7 +16,7 @@ const Home = () => {
                         </svg>
                     </div>
                     <h1 className="text-6xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-6">
-                        {isAuthenticated ? `Welcome back, ${auth?.username || 'User'}!` : 'Welcome to Skyline Insurance'}
+                        {isAuthenticated ? `Welcome back, ${auth?.user.firstName || 'User'}!` : 'Welcome to Skyline Insurance'}
                     </h1>
                     <p className="text-xl text-gray-300 mb-8 leading-relaxed">
                         {

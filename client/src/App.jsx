@@ -11,6 +11,7 @@ import QuickQuote from './quote/QuickQuote';
 import PreQuote from './quote/PreQuote';
 import QuoteDisplay from './display/QuoteDisplay';
 import ScrollToTop from './utils/ScrollToTop';
+import QuoteConfirmation from './confirmation/Confirmation';
 
 const App = () => (
   <AuthProvider>
@@ -26,6 +27,7 @@ const App = () => (
         <Route path="/quote/quick" element={<PrivateRoute><QuickQuote /></PrivateRoute>} />
         <Route path="/quote/pre" element={<PrivateRoute><PreQuote /></PrivateRoute>} />
         <Route path="/display/quotedisplay" element={<PrivateRoute><QuoteDisplay/></PrivateRoute>}/>
+        <Route path="/confirmation" element={<PrivateRoute><QuoteConfirmation/></PrivateRoute>}/>
       </Routes>
     </BrowserRouter>
   </AuthProvider>

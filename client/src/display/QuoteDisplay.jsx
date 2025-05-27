@@ -28,15 +28,58 @@ const QuoteDisplay = () => {
                 setQuoteRef(savedQuoteRef);
             } catch (error) {
                 console.error('Error loading quote data:', error);
+            } finally {
+                setLoading(false);
             }
+        } else {
+            console.warn('No quote data or reference found in localStorage.');
+            setLoading(false); // Ensure loading is cleared even if data is missing
         }
-
-        setLoading(false);
     }, []);
+
 
     const handleBack = () => {
         navigate('/quote/pre');
     };
+
+    const handleProceedToBuy = async () => {
+        if (!quoteData) {
+            alert("Quote data missing.");
+            return;
+        }
+
+        const finalPayload = {
+            ...quoteData,
+            quoteRef,
+        };
+
+        try {
+            const response = await fetch('http://localhost:5000/api/quote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(finalPayload),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('Quote submitted successfully!');
+                // Optionally clear localStorage and redirect
+                //localStorage.removeItem('completedQuoteData');
+                //localStorage.removeItem('savedQuoteRef');
+                navigate('/confirmation'); // or wherever you want
+            } else {
+                console.error('Error saving quote:', result);
+                alert('Failed to submit quote. Please try again.');
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Failed to connect to server. Please try again.');
+        }
+    };
+
 
 
     if (loading) {
@@ -61,7 +104,7 @@ const QuoteDisplay = () => {
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={handleNewQuote}
+                        //onClick={handleNewQuote}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
                     >
                         Create New Quote
@@ -226,7 +269,7 @@ const QuoteDisplay = () => {
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            //onClick={handleNewQuote}
+                            onClick={handleProceedToBuy}
                             className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
                         >
                             Proceed to Buy

@@ -112,87 +112,8 @@ const PreQuote = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    // const handleSave = async () => {
-    //     if (!form.certificateRatings || !form.instrumentRating || !form.overallHours || !form.twelveMonthsHours) {
-    //         alert('Please fill in all fields');
-    //         return;
-    //     }
 
-
-
-    //     try {
-    //         const partialDataStr = localStorage.getItem('partialQuoteData');
-
-    //         if (!partialDataStr) {
-    //             alert('No preliminary data found. Please start from the beginning.');
-    //             navigate('/quote/quick');
-    //             return;
-    //         }
-
-    //         const partialData = JSON.parse(partialDataStr);
-
-    //         const completeQuoteData = {
-    //             ...partialData,
-    //             certificateRatings: form.certificateRatings.value,
-    //             instrumentRating: form.instrumentRating.value,
-    //             overallHours: parseInt(form.overallHours),
-    //             twelveMonthsHours: parseInt(form.twelveMonthsHours),
-    //         };
-
-    //         console.log("Complete quote data being sent:", completeQuoteData);
-
-    //         const response = await fetch('http://localhost:5000/api/quote', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(completeQuoteData),
-    //         });
-
-    //         const result = await response.json();
-
-    //         if (response.ok) {
-    //             alert('Quote saved successfully');
-    //             localStorage.setItem('savedQuoteRef', result.quote.quoteRef);
-    //             localStorage.setItem('completedQuoteData', JSON.stringify(completeQuoteData));
-    //             setQuoteSaved(true);
-    //         } else {
-    //             console.error('Server error:', result);
-    //             alert(`Failed to save quote: ${result.message || 'Unknown error'}`);
-    //             if (result.errors) {
-    //                 console.error('Validation errors:', result.errors);
-    //             }
-    //         }
-    //         // sending data to spreadsheet
-    //         const sheetResponse = await fetch('http://localhost:5000/api/sheet/submit', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify({
-    //             coverageType: completeQuoteData.coverageType,
-    //             extendedCFI: completeQuoteData.extendedCFI,
-    //             isAopaMember: completeQuoteData.isAopaMember,
-    //             certificateRatings: completeQuoteData.certificateRatings,
-    //             instrumentRating: completeQuoteData.instrumentRating,
-    //             overallHours: completeQuoteData.overallHours,
-    //             twelveMonthsHours: completeQuoteData.twelveMonthsHours,
-    //         }),
-    //     });
-
-    //     const sheetResult = await sheetResponse.json();
-    //     console.log(sheetResult);
-
-
-    //     if (!sheetResult.created || sheetResult.created < 1) {
-    //         console.warn('Data saved in DB, but Sheet update failed:', sheetResult.message);
-    //     }
-
-    //     } catch (err) {
-    //         console.error('Network/parsing error:', err);
-    //         alert('Error saving quote. Please check your connection and try again.');
-    //     }
-    // };
-
-    const handleSave = async () => {
+    const handleContinue = async () => {
         if (!form.certificateRatings || !form.instrumentRating || !form.overallHours || !form.twelveMonthsHours) {
             alert('Please fill in all fields');
             return;
@@ -217,9 +138,8 @@ const PreQuote = () => {
                 twelveMonthsHours: parseInt(form.twelveMonthsHours),
             };
 
-            console.log("Complete quote data being sent:", completeQuoteData);
+            console.log("Sending data to sheet:", completeQuoteData);
 
-            //Send to Google Sheets FIRST to get premium
             const sheetResponse = await fetch('http://localhost:5000/api/sheet/submit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -237,53 +157,32 @@ const PreQuote = () => {
             const sheetResult = await sheetResponse.json();
 
             if (!sheetResult || sheetResult.status !== 'success') {
-                console.warn('Failed to calculate premium:', sheetResult.message);
+                console.warn('Premium calculation failed:', sheetResult.message);
                 alert('Failed to calculate premium');
                 return;
             }
 
             const premium = sheetResult.premium;
 
-            //Add premium to the quote data
             const finalQuoteData = {
                 ...completeQuoteData,
                 premium,
-                premiumBreakdown: sheetResult.breakdown, // optional: store breakdown too
+                premiumBreakdown: sheetResult.breakdown,
             };
 
-            //Save final quote to your DB with premium included
-            const response = await fetch('http://localhost:5000/api/quote', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(finalQuoteData),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert('Quote saved successfully with premium');
-                localStorage.setItem('savedQuoteRef', result.quote.quoteRef);
-                localStorage.setItem('completedQuoteData', JSON.stringify(finalQuoteData));
-                setQuoteSaved(true);
-                // optionally navigate to display
-                navigate('/display/quotedisplay', { state: { premiumResult: sheetResult } });
-            } else {
-                console.error('Server error:', result);
-                alert(`Failed to save quote: ${result.message || 'Unknown error'}`);
-            }
+            localStorage.setItem('completedQuoteData', JSON.stringify(finalQuoteData));
+            
+            localStorage.setItem('savedQuoteRef', partialData.quoteRef);
+            console.log(partialData.quoteRef);
+            setQuoteSaved(true);
+            navigate('/display/quotedisplay', { state: { premiumResult: sheetResult } });
 
         } catch (err) {
-            console.error('Network/parsing error:', err);
-            alert('Error saving quote. Please check your connection and try again.');
+            console.error('Error calculating premium:', err);
+            alert('Error connecting to premium service. Please try again.');
         }
     };
 
-
-    const handleContinue = () => {
-        navigate('/display/quotedisplay');
-    };
 
     const handlePrevious = () => {
         navigate('/quote/quick');
@@ -366,25 +265,12 @@ const PreQuote = () => {
                         Previous
                     </button>
 
-                    {/* Save Button - only show if quote not saved yet */}
-                    {!quoteSaved && (
-                        <button
-                            onClick={handleSave}
-                            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                        >
-                            Save
-                        </button>
-                    )}
-
-                    {/* Continue Button - only show after quote is saved */}
-                    {quoteSaved && (
-                        <button
-                            onClick={handleContinue}
-                            className="bg-indigo-900 hover:bg-indigo-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                        >
-                            Continue
-                        </button>
-                    )}
+                    <button
+                        onClick={handleContinue}
+                        className="bg-indigo-900 hover:bg-indigo-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                    >
+                        Continue
+                    </button>
                 </div>
             </div>
         </div>
