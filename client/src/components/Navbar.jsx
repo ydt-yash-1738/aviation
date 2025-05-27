@@ -63,7 +63,6 @@ const Navbar = () => {
                 <h1 className="text-xl text-white">
                   Skyline Insurance
                 </h1>
-                <p className="text-xs text-white -mt-1">Dashboard</p>
               </div>
             </Link>
           </div>
