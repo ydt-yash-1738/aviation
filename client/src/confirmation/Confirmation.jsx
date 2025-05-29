@@ -24,7 +24,7 @@ const QuoteConfirmation = () => {
         <CheckCircle className="text-green-500 w-16 h-16 mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-white mb-2">Thank You!</h1>
         <p className="text-white mb-6">
-          Your aviation insurance quote has been successfully generated and saved.
+          Your aviation insurance quote has been successfully generated and saved. The details will be sent over an email.
         </p>
         <button
           onClick={() => navigate('/intro')}

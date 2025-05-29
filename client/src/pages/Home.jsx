@@ -11,9 +11,9 @@ const Home = () => {
             <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
                 <div className="mb-8">
                     <div className="w-32 h-32 bg-[#03B7B7] rounded-full mx-auto mb-6 flex items-center justify-center shadow-2xl">
-                        <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
+                        <svg className="w-16 h-16 text-white pointer-events-none" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M2.5 19L3 20l8.5-5V22h1v-7l8.5 5 .5-1L13 12l9-7.5-.5-1-8.5 5V2h-1v7.5L3 3l-.5 1L11 12 2.5 19z" />
+                  </svg>
                     </div>
                     <h1 className="text-6xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-6">
                         {isAuthenticated ? `Welcome back, ${auth?.user.firstName || 'User'}!` : 'Welcome to Skyline Insurance'}
