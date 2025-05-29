@@ -6,13 +6,6 @@ const Navbar = () => {
   const { auth, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // const handleLogout = (e) => {
-  //   e.preventDefault();
-  //   console.log('Logout clicked');
-  //   logout();
-  //   navigate('/login');
-  // };
-
   const handleLogout = (e) => {
     e.preventDefault();
     console.log('Logout clicked');
@@ -29,8 +22,8 @@ const Navbar = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 
-    logout(); // Call your logout logic
-    navigate('/login'); // Redirect to login
+    logout(); 
+    navigate('/login'); 
   };
 
 
@@ -60,7 +53,7 @@ const Navbar = () => {
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-slate-900 pointer-events-none"></div>
               </div>
               <div className="hidden sm:block pointer-events-none">
-                <h1 className="text-xl text-white">
+                <h1 className="text-xl text-white font-bold">
                   Skyline Insurance
                 </h1>
               </div>

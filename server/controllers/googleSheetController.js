@@ -1,5 +1,4 @@
-// controllers/googleSheetController.js
-import fetch from 'node-fetch'; // If using Node.js <18
+import fetch from 'node-fetch'; 
 
 export const forwardToGoogleSheet = async (req, res) => {
   try {
