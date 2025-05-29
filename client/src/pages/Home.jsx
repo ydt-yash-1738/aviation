@@ -48,13 +48,13 @@ const Home = () => {
                         <>
                             <Link
                                 to="/login"
-                                className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-blue-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transform hover:scale-105 transition-all duration-300 shadow-xl"
+                                className="group relative px-6 py-2 bg-[#144074] text-white hover:bg-[#03B7B7] hover:text-[#1A2C47] transition-colors duration-200 border-2 border-[#03B7B7] font-semibold text-white font-medium text-sm rounded-full transform hover:scale-105 transition-all duration-200 cursor-pointer"
                             >
                                 Sign In
                             </Link>
                             <Link
                                 to="/register"
-                                className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-emerald-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-gray-900 transform hover:scale-105 transition-all duration-300 shadow-xl"
+                                className="group relative px-6 py-2 bg-[#144074] text-white hover:bg-[#03B7B7] hover:text-[#1A2C47] transition-colors duration-200 border-2 border-[#03B7B7] font-semibold text-white font-medium text-sm rounded-full transform hover:scale-105 transition-all duration-200 cursor-pointer"
                             >
                                 Get Started
                             </Link>

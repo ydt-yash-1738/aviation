@@ -42,9 +42,47 @@ const QuoteDisplay = () => {
         navigate('/quote/pre');
     };
 
+    // const handleProceedToBuy = async () => {
+    //     if (!quoteData) {
+    //         alert("Quote data missing.");
+    //         return;
+    //     }
+
+    //     const finalPayload = {
+    //         ...quoteData,
+    //         quoteRef,
+    //     };
+
+    //     try {
+    //         const response = await fetch('http://localhost:5000/api/quote', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(finalPayload),
+    //         });
+
+    //         const result = await response.json();
+
+    //         if (response.ok) {
+    //             alert('Quote submitted successfully!');
+    //             // Optionally clear localStorage and redirect
+    //             //localStorage.removeItem('completedQuoteData');
+    //             //localStorage.removeItem('savedQuoteRef');
+    //             navigate('/confirmation'); // or wherever you want
+    //         } else {
+    //             console.error('Error saving quote:', result);
+    //             alert('Failed to submit quote. Please try again.');
+    //         }
+    //     } catch (error) {
+    //         console.error('Network error:', error);
+    //         alert('Failed to connect to server. Please try again.');
+    //     }
+    // };
+
     const handleProceedToBuy = async () => {
-        if (!quoteData) {
-            alert("Quote data missing.");
+        if (!quoteData || !quoteRef) {
+            alert("Quote data or reference is missing.");
             return;
         }
 
@@ -54,6 +92,7 @@ const QuoteDisplay = () => {
         };
 
         try {
+            // Step 1: Save quote to MongoDB
             const response = await fetch('http://localhost:5000/api/quote', {
                 method: 'POST',
                 headers: {
@@ -66,10 +105,22 @@ const QuoteDisplay = () => {
 
             if (response.ok) {
                 alert('Quote submitted successfully!');
-                // Optionally clear localStorage and redirect
-                //localStorage.removeItem('completedQuoteData');
-                //localStorage.removeItem('savedQuoteRef');
-                navigate('/confirmation'); // or wherever you want
+
+                // Step 2: Send email after quote is saved
+                const emailResponse = await fetch(`http://localhost:5000/api/send-quote-email/${quoteRef}`, {
+                    method: 'POST',
+                });
+
+                const emailResult = await emailResponse.json();
+
+                if (emailResponse.ok) {
+                    console.log('Email sent:', emailResult);
+                } else {
+                    console.warn('Email failed to send:', emailResult);
+                }
+
+                // Redirect to confirmation page
+                navigate('/confirmation');
             } else {
                 console.error('Error saving quote:', result);
                 alert('Failed to submit quote. Please try again.');
