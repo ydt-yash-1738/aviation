@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './utils/PrivateRoute';
 import Navbar from './components/Navbar';
@@ -13,10 +14,26 @@ import QuoteDisplay from './display/QuoteDisplay';
 import ScrollToTop from './utils/ScrollToTop';
 import QuoteConfirmation from './confirmation/Confirmation';
 
-const App = () => (
-  <AuthProvider>
-    <BrowserRouter>
-      <ScrollToTop/>
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+
+NProgress.configure({ showSpinner: false });
+
+const AppRoutes = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    NProgress.start();
+    const timeout = setTimeout(() => {
+      NProgress.done();
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [location.pathname]);
+
+  return (
+    <>
+      <ScrollToTop />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -26,10 +43,19 @@ const App = () => (
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/quote/quick" element={<PrivateRoute><QuickQuote /></PrivateRoute>} />
         <Route path="/quote/pre" element={<PrivateRoute><PreQuote /></PrivateRoute>} />
-        <Route path="/display/quotedisplay" element={<PrivateRoute><QuoteDisplay/></PrivateRoute>}/>
-        <Route path="/confirmation" element={<PrivateRoute><QuoteConfirmation/></PrivateRoute>}/>
+        <Route path="/display/quotedisplay" element={<PrivateRoute><QuoteDisplay /></PrivateRoute>} />
+        <Route path="/confirmation" element={<PrivateRoute><QuoteConfirmation /></PrivateRoute>} />
       </Routes>
+    </>
+  );
+};
+
+const App = () => (
+  <AuthProvider>
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   </AuthProvider>
 );
+
 export default App;
