@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js';
 import quoteRoutes from './routes/quoteRoutes.js';
 import sheetRoutes from './routes/sheet.js';
 import emailRoutes from './routes/email.js';
+import tentativeEmailRoutes from './routes/tentativeEmail.js'
 
 const app = express();
 app.use(cors());
@@ -22,5 +23,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/quote', quoteRoutes);
 app.use('/api/sheet', sheetRoutes);
 app.use('/api', emailRoutes);
+app.use('/api/tentative-email', tentativeEmailRoutes);
 
 app.listen(5000, () => console.log('Server running on http://localhost:5000'));

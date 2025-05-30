@@ -20,6 +20,7 @@ const QuoteDisplay = () => {
     useEffect(() => {
         const savedQuoteData = localStorage.getItem('completedQuoteData');
         const savedQuoteRef = localStorage.getItem('savedQuoteRef');
+        
 
         if (savedQuoteData && savedQuoteRef) {
             try {
@@ -42,43 +43,33 @@ const QuoteDisplay = () => {
         navigate('/quote/pre');
     };
 
-    // const handleProceedToBuy = async () => {
-    //     if (!quoteData) {
-    //         alert("Quote data missing.");
-    //         return;
-    //     }
+    const handleEmailThisQuote = async () => {
+        const quoteData = JSON.parse(localStorage.getItem('completedQuoteData'));
+        console.log(quoteData);
+        
+        try {
+            const response = await fetch('http://localhost:5000/api/tentative-email/send-tentative-quote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(quoteData),
+            });
 
-    //     const finalPayload = {
-    //         ...quoteData,
-    //         quoteRef,
-    //     };
+            const result = await response.json();
 
-    //     try {
-    //         const response = await fetch('http://localhost:5000/api/quote', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(finalPayload),
-    //         });
+            if (response.ok) {
+                alert('Quote email sent successfully!');
+            } else {
+                alert('Failed to send email.');
+                console.error(result);
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Network error sending quote email.');
+        }
+    };
 
-    //         const result = await response.json();
-
-    //         if (response.ok) {
-    //             alert('Quote submitted successfully!');
-    //             // Optionally clear localStorage and redirect
-    //             //localStorage.removeItem('completedQuoteData');
-    //             //localStorage.removeItem('savedQuoteRef');
-    //             navigate('/confirmation'); // or wherever you want
-    //         } else {
-    //             console.error('Error saving quote:', result);
-    //             alert('Failed to submit quote. Please try again.');
-    //         }
-    //     } catch (error) {
-    //         console.error('Network error:', error);
-    //         alert('Failed to connect to server. Please try again.');
-    //     }
-    // };
 
     const handleProceedToBuy = async () => {
         if (!quoteData || !quoteRef) {
@@ -316,6 +307,14 @@ const QuoteDisplay = () => {
                             className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
                         >
                             Back to Edit
+                        </motion.button>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={handleEmailThisQuote}
+                            className="bg-red-500 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
+                        >
+                            Email this Quote
                         </motion.button>
                         <motion.button
                             whileHover={{ scale: 1.05 }}
