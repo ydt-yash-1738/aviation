@@ -104,6 +104,11 @@ const quoteSchema = new mongoose.Schema({
     type: Object,
     required: false
   },
+  policyNumber: { 
+    type: String, 
+    required: true, 
+    unique: true 
+  },
 }, {
   collection: 'quote'
 });

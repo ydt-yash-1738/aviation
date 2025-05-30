@@ -13,6 +13,7 @@ import PreQuote from './quote/PreQuote';
 import QuoteDisplay from './display/QuoteDisplay';
 import ScrollToTop from './utils/ScrollToTop';
 import QuoteConfirmation from './confirmation/Confirmation';
+import Payment from './payment/Payment';
 
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -44,6 +45,7 @@ const AppRoutes = () => {
         <Route path="/quote/quick" element={<PrivateRoute><QuickQuote /></PrivateRoute>} />
         <Route path="/quote/pre" element={<PrivateRoute><PreQuote /></PrivateRoute>} />
         <Route path="/display/quotedisplay" element={<PrivateRoute><QuoteDisplay /></PrivateRoute>} />
+        <Route path="/payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
         <Route path="/confirmation" element={<PrivateRoute><QuoteConfirmation /></PrivateRoute>} />
       </Routes>
     </>

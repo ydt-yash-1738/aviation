@@ -12,17 +12,25 @@ router.post('/', async (req, res) => {
       quoteData.quoteRef = 'SKYLINE-QR-' + Date.now();
     }
 
-    // Log received premium to debug
+    // policy number generation
+    const timestamp = Date.now();
+    const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const policyNumber = `SKYLINE-POLICYNUMBER-${timestamp}-${randomSuffix}`;
+
+    quoteData.policyNumber = policyNumber;
+
+    console.log('Generated Policy Number:', policyNumber);
     console.log('Received premium:', quoteData.premium);
     console.log('Received premium breakdown:', quoteData.premiumBreakdown);
 
-    const newQuote = new Quote({
-      ...quoteData, // this includes premium and premiumBreakdown if sent from frontend
-    });
+    // const newQuote = new Quote({
+    //   ...quoteData, // this includes premium and premiumBreakdown if sent from frontend
+    // });
 
+    const newQuote = new Quote(quoteData);
     const savedQuote = await newQuote.save();
 
-    res.status(201).json({
+     res.status(201).json({
       message: 'Quote saved successfully',
       quote: savedQuote,
     });

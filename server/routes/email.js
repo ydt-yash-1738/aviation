@@ -20,9 +20,9 @@ router.post('/send-quote-email/:quoteRef', async (req, res) => {
       return res.status(404).json({ error: 'Quote not found' });
     }
 
-    const { insuredFirstName, coverageType, premium } = quoteData;
-    console.log('Email params:', { insuredFirstName, coverageType, quoteRef, premium });
-    if (!insuredFirstName || !coverageType || !quoteRef || !premium) {
+    const { insuredFirstName, coverageType, policyNumber, premium } = quoteData;
+    console.log('Email params:', { insuredFirstName, coverageType, policyNumber, premium });
+    if (!insuredFirstName || !coverageType || !policyNumber || !premium) {
       return res.status(400).json({ error: 'Missing data fields for email template' });
     }
     // Prepare email parameters
@@ -32,7 +32,7 @@ router.post('/send-quote-email/:quoteRef', async (req, res) => {
       params: {
         insuredFirstName,
         coverageType,
-        quoteRef,
+        policyNumber,
         premium,
       },
     };

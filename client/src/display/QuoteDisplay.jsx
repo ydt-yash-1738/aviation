@@ -71,56 +71,56 @@ const QuoteDisplay = () => {
     };
 
 
-    const handleProceedToBuy = async () => {
-        if (!quoteData || !quoteRef) {
-            alert("Quote data or reference is missing.");
-            return;
-        }
+    // const handleProceedToBuy = async () => {
+    //     if (!quoteData || !quoteRef) {
+    //         alert("Quote data or reference is missing.");
+    //         return;
+    //     }
 
-        const finalPayload = {
-            ...quoteData,
-            quoteRef,
-        };
+    //     const finalPayload = {
+    //         ...quoteData,
+    //         quoteRef,
+    //     };
 
-        try {
-            // Step 1: Save quote to MongoDB
-            const response = await fetch('http://localhost:5000/api/quote', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(finalPayload),
-            });
+    //     try {
+    //         // Step 1: Save quote to MongoDB
+    //         const response = await fetch('http://localhost:5000/api/quote', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(finalPayload),
+    //         });
 
-            const result = await response.json();
+    //         const result = await response.json();
 
-            if (response.ok) {
-                alert('Quote submitted successfully!');
+    //         if (response.ok) {
+    //             alert('Quote submitted successfully!');
 
-                // Step 2: Send email after quote is saved
-                const emailResponse = await fetch(`http://localhost:5000/api/send-quote-email/${quoteRef}`, {
-                    method: 'POST',
-                });
+    //             // Step 2: Send email after quote is saved
+    //             const emailResponse = await fetch(`http://localhost:5000/api/send-quote-email/${quoteRef}`, {
+    //                 method: 'POST',
+    //             });
 
-                const emailResult = await emailResponse.json();
+    //             const emailResult = await emailResponse.json();
 
-                if (emailResponse.ok) {
-                    console.log('Email sent:', emailResult);
-                } else {
-                    console.warn('Email failed to send:', emailResult);
-                }
+    //             if (emailResponse.ok) {
+    //                 console.log('Email sent:', emailResult);
+    //             } else {
+    //                 console.warn('Email failed to send:', emailResult);
+    //             }
 
-                // Redirect to confirmation page
-                navigate('/confirmation');
-            } else {
-                console.error('Error saving quote:', result);
-                alert('Failed to submit quote. Please try again.');
-            }
-        } catch (error) {
-            console.error('Network error:', error);
-            alert('Failed to connect to server. Please try again.');
-        }
-    };
+    //             // Redirect to confirmation page
+    //             navigate('/payment');
+    //         } else {
+    //             console.error('Error saving quote:', result);
+    //             alert('Failed to submit quote. Please try again.');
+    //         }
+    //     } catch (error) {
+    //         console.error('Network error:', error);
+    //         alert('Failed to connect to server. Please try again.');
+    //     }
+    // };
 
 
 
@@ -319,7 +319,7 @@ const QuoteDisplay = () => {
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={handleProceedToBuy}
+                            onClick={() => navigate('/payment')}
                             className="bg-teal-600 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
                         >
                             Proceed to Buy
