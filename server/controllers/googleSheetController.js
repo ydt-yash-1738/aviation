@@ -18,7 +18,6 @@ let result;
 try {
   result = JSON.parse(text);
   console.log(result);
-  console.log(result);
   
 } catch (e) {
   console.error('Failed to parse Google Script response as JSON:', text);

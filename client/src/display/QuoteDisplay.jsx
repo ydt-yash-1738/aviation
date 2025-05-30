@@ -70,60 +70,6 @@ const QuoteDisplay = () => {
         }
     };
 
-
-    // const handleProceedToBuy = async () => {
-    //     if (!quoteData || !quoteRef) {
-    //         alert("Quote data or reference is missing.");
-    //         return;
-    //     }
-
-    //     const finalPayload = {
-    //         ...quoteData,
-    //         quoteRef,
-    //     };
-
-    //     try {
-    //         // Step 1: Save quote to MongoDB
-    //         const response = await fetch('http://localhost:5000/api/quote', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(finalPayload),
-    //         });
-
-    //         const result = await response.json();
-
-    //         if (response.ok) {
-    //             alert('Quote submitted successfully!');
-
-    //             // Step 2: Send email after quote is saved
-    //             const emailResponse = await fetch(`http://localhost:5000/api/send-quote-email/${quoteRef}`, {
-    //                 method: 'POST',
-    //             });
-
-    //             const emailResult = await emailResponse.json();
-
-    //             if (emailResponse.ok) {
-    //                 console.log('Email sent:', emailResult);
-    //             } else {
-    //                 console.warn('Email failed to send:', emailResult);
-    //             }
-
-    //             // Redirect to confirmation page
-    //             navigate('/payment');
-    //         } else {
-    //             console.error('Error saving quote:', result);
-    //             alert('Failed to submit quote. Please try again.');
-    //         }
-    //     } catch (error) {
-    //         console.error('Network error:', error);
-    //         alert('Failed to connect to server. Please try again.');
-    //     }
-    // };
-
-
-
     if (loading) {
         return (
             <div className="min-h-screen bg-[#1A2C47] flex items-center justify-center">

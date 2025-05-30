@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
     quoteData.policyNumber = policyNumber;
 
     console.log('Generated Policy Number:', policyNumber);
-    console.log('Received premium:', quoteData.premium);
+    console.log('Received premium:', quoteData.premium.toFixed(2));
     console.log('Received premium breakdown:', quoteData.premiumBreakdown);
 
     // const newQuote = new Quote({

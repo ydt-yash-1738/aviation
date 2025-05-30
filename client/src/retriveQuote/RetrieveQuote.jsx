@@ -46,9 +46,9 @@ const RetrieveQuote = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <input
           type="text"
-          name="firstName"
+          name="insuredFirstName"
           placeholder="First Name"
-          value={formData.firstName}
+          value={formData.insuredFirstName}
           onChange={handleChange}
           className="w-full px-4 py-2 rounded bg-[#144074] border border-[#03B7B7] focus:outline-none"
         />
@@ -114,7 +114,7 @@ const RetrieveQuote = () => {
                   <td className="py-3 px-5">{quote.policyNumber}</td>
                   <td className="py-3 px-5">{quote.insuredFirstName}</td>
                   <td className="py-3 px-5">{quote.insuredLastName}</td>
-                  <td className="py-3 px-5">${quote.premium}</td>
+                  <td className="py-3 px-5">${quote.premium.toFixed(2)}</td>
                   <td className="py-3 px-5">
                     <div className="flex gap-4">
                       <a href="#" className="text-blue-300 hover:text-blue-500 underline">Adjust Policy</a>
