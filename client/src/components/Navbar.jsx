@@ -81,6 +81,14 @@ const Navbar = () => {
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#00CCFF] group-hover:w-full transition-all duration-300 pointer-events-none"></span>
                 </Link>
                 <Link
+                  to="/retrievequote"
+                  className="text-white hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200 relative group cursor-pointer"
+                  style={{ textDecoration: 'none' }}
+                >
+                  Retrive a Quote
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#00CCFF] group-hover:w-full transition-all duration-300 pointer-events-none"></span>
+                </Link>
+                <Link
                   to="/profile"
                   className="text-white hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200 relative group cursor-pointer"
                   style={{ textDecoration: 'none' }}
