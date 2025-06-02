@@ -10,17 +10,8 @@ const Navbar = () => {
     e.preventDefault();
     console.log('Logout clicked');
 
-    // Clear all localStorage related to quote/form data
-    localStorage.removeItem('quickQuoteFormData');
-    localStorage.removeItem('partialQuoteData');
-    localStorage.removeItem('quoteRef');
-    localStorage.removeItem('preQuoteFormData');
-    localStorage.removeItem('completedQuoteData');
-    localStorage.removeItem('savedQuoteRef');
-
     // Also clear any auth data if stored
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('auth');
 
     logout(); 
     navigate('/login'); 

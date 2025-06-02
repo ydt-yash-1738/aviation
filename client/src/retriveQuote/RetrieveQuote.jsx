@@ -105,7 +105,7 @@ const RetrieveQuote = () => {
                 <th className="py-3 px-5 w-40">First Name</th>
                 <th className="py-3 px-5 w-40">Last Name</th>
                 <th className="py-3 px-5 w-32">Premium</th>
-                <th className="py-3 px-5 w-64">Actions</th>
+                <th className="py-3 px-5 w-64 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -118,8 +118,8 @@ const RetrieveQuote = () => {
                   <td className="py-3 px-5">
                     <div className="flex gap-4">
                       <a href="#" className="text-blue-300 hover:text-blue-500 underline">Adjust Policy</a>
-                      <a href="#" className="text-green-300 hover:text-green-500 underline">MTA</a>
-                      <a href="#" className="text-red-300 hover:text-red-500 underline">Cancellation</a>
+                      <a href="#" className="text-green-300 hover:text-green-500 underline">Renew Policy</a>
+                      <a href="#" className="text-red-300 hover:text-red-500 underline">Cancel Policy</a>
                     </div>
                   </td>
                 </tr>

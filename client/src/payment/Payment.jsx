@@ -46,22 +46,42 @@ const Payment = () => {
         }, 1500);
     };
 
+    // useEffect(() => {
+    //     const savedQuoteData = localStorage.getItem('completedQuoteData');
+    //     const savedQuoteRef = localStorage.getItem('savedQuoteRef');
+
+    //     if (savedQuoteData && savedQuoteRef) {
+    //         try {
+    //             setQuoteData(JSON.parse(savedQuoteData));
+    //             setQuoteRef(savedQuoteRef);
+    //         } catch (error) {
+    //             console.error('Failed to parse quote data:', error);
+    //         }
+    //     } else {
+    //         alert('Quote data is missing. Redirecting...');
+    //         navigate('/quote/pre');
+    //     }
+    // }, [navigate]);
+
     useEffect(() => {
         const savedQuoteData = localStorage.getItem('completedQuoteData');
         const savedQuoteRef = localStorage.getItem('savedQuoteRef');
 
-        if (savedQuoteData && savedQuoteRef) {
+        if (savedQuoteData) {
             try {
                 setQuoteData(JSON.parse(savedQuoteData));
-                setQuoteRef(savedQuoteRef);
+                if (savedQuoteRef) setQuoteRef(savedQuoteRef);
             } catch (error) {
                 console.error('Failed to parse quote data:', error);
+                alert('Invalid quote data. Redirecting...');
+                navigate('/quote/pre');
             }
         } else {
             alert('Quote data is missing. Redirecting...');
             navigate('/quote/pre');
         }
     }, [navigate]);
+
 
     const handlePrevious = () => {
         navigate('/display/quotedisplay')
@@ -125,19 +145,94 @@ const Payment = () => {
     //     }
     // };
 
+    // const handlePayNow = async () => {
+    //     if (
+    //         (partner !== 'card') ||
+    //         (/^\d{16}$/.test(cardNumber.replace(/\s+/g, '')) &&
+    //             /^\d{2}\/\d{2}$/.test(expiry) &&
+    //             /^\d{3,4}$/.test(cvv))
+    //     ) {
+    //         const quoteData = JSON.parse(localStorage.getItem('completedQuoteData'));
+    //         const quoteRef = localStorage.getItem('savedQuoteRef');
+
+    //         if (!quoteData || !quoteRef) {
+    //             setMessage('Quote data or reference is missing.');
+    //             return;
+    //         }
+
+    //         const finalPayload = {
+    //             ...quoteData,
+    //             quoteRef,
+    //         };
+
+    //         try {
+    //             const response = await fetch('http://localhost:5000/api/quote', {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //                 body: JSON.stringify(finalPayload),
+    //             });
+
+    //             const result = await response.json();
+
+    //             if (response.ok) {
+    //                 const policyNumber = result.quote.policyNumber;
+    //                 localStorage.setItem('policyNumber', policyNumber);
+    //                 console.log(policyNumber);
+
+    //                 // Send email (optional)
+    //                 const emailResponse = await fetch(`http://localhost:5000/api/send-quote-email/${quoteRef}`, {
+    //                     method: 'POST',
+    //                 });
+
+    //                 if (!emailResponse.ok) {
+    //                     const emailResult = await emailResponse.json();
+    //                     console.warn('Email failed to send:', emailResult);
+    //                 }
+
+    //                 // Clear stored journey state (important for resuming logic)
+    //                 localStorage.removeItem('currentQuoteStep');
+    //                 localStorage.removeItem('partialQuoteData');
+    //                 localStorage.removeItem('preQuoteFormData');
+    //                 localStorage.removeItem('completedQuoteData');
+    //                 localStorage.removeItem('savedQuoteRef');
+
+    //                 navigate('/confirmation');
+    //             }
+    //             else {
+    //                 console.error('Error saving quote:', result);
+    //                 setMessage('Failed to submit quote. Please try again.');
+    //             }
+    //         } catch (error) {
+    //             console.error('Network error:', error);
+    //             setMessage('Failed to connect to server. Please try again.');
+    //         }
+    //     } else {
+    //         setMessage('Please fix validation errors before proceeding');
+    //     }
+    // };
+
     const handlePayNow = async () => {
         if (
-            (partner !== 'card') ||
+            partner !== 'card' ||
             (/^\d{16}$/.test(cardNumber.replace(/\s+/g, '')) &&
                 /^\d{2}\/\d{2}$/.test(expiry) &&
                 /^\d{3,4}$/.test(cvv))
         ) {
-            const quoteData = JSON.parse(localStorage.getItem('completedQuoteData'));
-            const quoteRef = localStorage.getItem('savedQuoteRef');
-
-            if (!quoteData || !quoteRef) {
-                setMessage('Quote data or reference is missing.');
+            const quoteDataStr = localStorage.getItem('completedQuoteData');
+            if (!quoteDataStr) {
+                setMessage('Quote data is missing.');
                 return;
+            }
+
+            const quoteData = JSON.parse(quoteDataStr);
+            let quoteRef = localStorage.getItem('savedQuoteRef');
+
+            // Optional: generate a quoteRef if missing
+            if (!quoteRef) {
+                quoteRef = `Q-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+                localStorage.setItem('savedQuoteRef', quoteRef); // Save it if needed again
             }
 
             const finalPayload = {
@@ -158,22 +253,24 @@ const Payment = () => {
 
                 if (response.ok) {
                     const policyNumber = result.quote.policyNumber;
-                    localStorage.setItem('policyNumber', policyNumber); 
-                    console.log(policyNumber);
+                    localStorage.setItem('policyNumber', policyNumber);
+                    console.log('Policy Number:', policyNumber);
 
-                    // Send email (optional: include policyNumber in email if needed)
-                    const emailResponse = await fetch(`http://localhost:5000/api/send-quote-email/${quoteRef}`, {
+                    // Send quote email
+                    await fetch(`http://localhost:5000/api/send-quote-email/${quoteRef}`, {
                         method: 'POST',
                     });
 
-                    if (!emailResponse.ok) {
-                        const emailResult = await emailResponse.json();
-                        console.warn('Email failed to send:', emailResult);
-                    }
+                    // Clear journey data
+                    localStorage.removeItem('currentQuoteStep');
+                    localStorage.removeItem('partialQuoteData');
+                    localStorage.removeItem('preQuoteFormData');
+                    localStorage.removeItem('completedQuoteData');
+                    localStorage.removeItem('savedQuoteRef');
 
                     navigate('/confirmation');
                 } else {
-                    console.error('Error saving quote:', result);
+                    console.error('Quote submission failed:', result);
                     setMessage('Failed to submit quote. Please try again.');
                 }
             } catch (error) {
@@ -292,7 +389,7 @@ const Payment = () => {
                             onClick={handlePayNow}
                             className="bg-teal-600 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all duration-200"
                         >
-                            Proceed to Buy
+                            Buy Now!
                         </motion.button>
                     </motion.div>
                 </form>

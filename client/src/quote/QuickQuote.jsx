@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -55,6 +55,7 @@ const customStyles = {
 
 const QuickQuote = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({
     effectiveDate: null,
     coverageType: null,
@@ -63,7 +64,7 @@ const QuickQuote = () => {
     insuredFirstName: '',
     insuredMiddleName: '',
     insuredLastName: '',
-    insuredEmail:'',
+    insuredEmail: '',
     insuredAddressLineOne: '',
     insuredAddressLineTwo: '',
     insuredCity: '',
@@ -75,59 +76,83 @@ const QuickQuote = () => {
 
   // Load saved data on component mount
   useEffect(() => {
-    const savedQuickQuoteData = localStorage.getItem('quickQuoteFormData');
-    if (savedQuickQuoteData) {
-      try {
-        const parsedData = JSON.parse(savedQuickQuoteData);
-        console.log(parsedData);
-        
-        setForm({
-          effectiveDate: parsedData.effectiveDate ? new Date(parsedData.effectiveDate) : null,
-          coverageType: parsedData.coverageType
-            ? CoverageOptions.find(opt => opt.value === parsedData.coverageType) || null
-            : null,
-          extendedCFI: parsedData.extendedCFI
-            ? yesNoOptions.find(opt => opt.value === parsedData.extendedCFI) || null
-            : null,
-          isAopaMember: parsedData.isAopaMember
-            ? yesNoOptions.find(opt => opt.value === parsedData.isAopaMember) || null
-            : null,
-          insuredFirstName: parsedData.insuredFirstName || '',
-          insuredMiddleName: parsedData.insuredMiddleName || '',
-          insuredLastName: parsedData.insuredLastName || '',
-          insuredEmail: parsedData.insuredEmail || '',
-          insuredAddressLineOne: parsedData.insuredAddressLineOne || '',
-          insuredAddressLineTwo: parsedData.insuredAddressLineTwo || '',
-          insuredCity: parsedData.insuredCity || '',
-          insuredState: parsedData.insuredState || '',
-          insuredCountry: parsedData.insuredCountry || '',
-          insuredZIP: parsedData.insuredZIP || '',
-          age: parsedData.age || ''
-        });
-      } catch (error) {
-        console.error('Error loading saved quick quote data:', error);
+    const resumeData = location.state?.resumeData;
+
+    if (resumeData) {
+      // Load from resumeData passed through navigation
+      setForm({
+        effectiveDate: resumeData.effectiveDate ? new Date(resumeData.effectiveDate) : null,
+        coverageType: resumeData.coverageType
+          ? CoverageOptions.find(opt => opt.value === resumeData.coverageType) || null
+          : null,
+        extendedCFI: resumeData.extendedCFI
+          ? yesNoOptions.find(opt => opt.value === resumeData.extendedCFI) || null
+          : null,
+        isAopaMember: resumeData.isAopaMember
+          ? yesNoOptions.find(opt => opt.value === resumeData.isAopaMember) || null
+          : null,
+        insuredFirstName: resumeData.insuredFirstName || '',
+        insuredMiddleName: resumeData.insuredMiddleName || '',
+        insuredLastName: resumeData.insuredLastName || '',
+        insuredEmail: resumeData.insuredEmail || '',
+        insuredAddressLineOne: resumeData.insuredAddressLineOne || '',
+        insuredAddressLineTwo: resumeData.insuredAddressLineTwo || '',
+        insuredCity: resumeData.insuredCity || '',
+        insuredState: resumeData.insuredState || '',
+        insuredCountry: resumeData.insuredCountry || '',
+        insuredZIP: resumeData.insuredZIP || '',
+        age: resumeData.age || ''
+      });
+    } else {
+      // 👇 Try to load from localStorage
+      const savedData = localStorage.getItem('quickQuoteFormData');
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          setForm({
+            effectiveDate: parsed.effectiveDate ? new Date(parsed.effectiveDate) : null,
+            coverageType: parsed.coverageType
+              ? CoverageOptions.find(opt => opt.value === parsed.coverageType) || null
+              : null,
+            extendedCFI: parsed.extendedCFI
+              ? yesNoOptions.find(opt => opt.value === parsed.extendedCFI) || null
+              : null,
+            isAopaMember: parsed.isAopaMember
+              ? yesNoOptions.find(opt => opt.value === parsed.isAopaMember) || null
+              : null,
+            insuredFirstName: parsed.insuredFirstName || '',
+            insuredMiddleName: parsed.insuredMiddleName || '',
+            insuredLastName: parsed.insuredLastName || '',
+            insuredEmail: parsed.insuredEmail || '',
+            insuredAddressLineOne: parsed.insuredAddressLineOne || '',
+            insuredAddressLineTwo: parsed.insuredAddressLineTwo || '',
+            insuredCity: parsed.insuredCity || '',
+            insuredState: parsed.insuredState || '',
+            insuredCountry: parsed.insuredCountry || '',
+            insuredZIP: parsed.insuredZIP || '',
+            age: parsed.age || ''
+          });
+        } catch (error) {
+          console.error('Error parsing saved Quick Quote form data:', error);
+        }
       }
     }
-  }, []);
-  
-  
+  }, [location.state]);
 
-  // Save form data to localStorage whenever form changes
+
   useEffect(() => {
     const dataToSave = {
       ...form,
-      // Convert Date object to string for storage
       effectiveDate: form.effectiveDate ? form.effectiveDate.toISOString() : null,
-      // Convert select objects to their values for storage
       coverageType: form.coverageType ? form.coverageType.value : null,
       extendedCFI: form.extendedCFI ? form.extendedCFI.value : null,
       isAopaMember: form.isAopaMember ? form.isAopaMember.value : null,
     };
-    
+
     localStorage.setItem('quickQuoteFormData', JSON.stringify(dataToSave));
+    localStorage.setItem('currentQuoteStep', 'quickQuote');
   }, [form]);
-  
-  // Handle react-select changes: set selected option object (or null)
+
   const handleSelectChange = (selectedOption, actionMeta) => {
     setForm((prev) => ({
       ...prev,
@@ -135,33 +160,28 @@ const QuickQuote = () => {
     }));
   };
 
-  // Handle native inputs
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Generating QuoteRef
   const generateQuoteRef = () => {
     return 'SKYLINE-QR-' + Date.now();
   };
 
   const handleNext = () => {
-    // Basic validation
     if (!form.effectiveDate || !form.coverageType || !form.extendedCFI || !form.isAopaMember ||
-        !form.insuredFirstName || !form.insuredLastName || !form.insuredAddressLineOne ||
-        !form.insuredCity || !form.insuredState || !form.insuredCountry || !form.insuredZIP || !form.age || !form.insuredEmail) {
+      !form.insuredFirstName || !form.insuredLastName || !form.insuredAddressLineOne ||
+      !form.insuredCity || !form.insuredState || !form.insuredCountry || !form.insuredZIP || !form.age || !form.insuredEmail) {
       alert('Please fill in all required fields');
       return;
     }
 
-    // Check if we already have a quote reference, if not generate a new one
     let quoteRef = localStorage.getItem('quoteRef');
     if (!quoteRef) {
       quoteRef = generateQuoteRef();
       localStorage.setItem('quoteRef', quoteRef);
     }
-    
-    // Store partial quote data in localStorage for the next step
+
     const partialQuoteData = {
       quoteRef,
       effectiveDate: form.effectiveDate,
@@ -180,42 +200,39 @@ const QuickQuote = () => {
       insuredZIP: form.insuredZIP,
       age: parseInt(form.age) || 0
     };
-    console.log(partialQuoteData);
-    
-    // Store in localStorage for next component
+
     localStorage.setItem('partialQuoteData', JSON.stringify(partialQuoteData));
-    
-    // Navigate to next step - don't clear form data yet
+    localStorage.setItem('currentQuoteStep', 'preQuote');
+
     navigate('/quote/pre');
   };
 
-  // Function to clear all form data (for starting fresh)
-  const clearAllFormData = () => {
-    localStorage.removeItem('quickQuoteFormData');
-    localStorage.removeItem('preQuoteFormData');
-    localStorage.removeItem('partialQuoteData');
-    localStorage.removeItem('quoteRef');
-    localStorage.removeItem('completedQuoteData');
-    localStorage.removeItem('savedQuoteRef');
-    // Reset form state
-    setForm({
-      effectiveDate: null,
-      coverageType: null,
-      extendedCFI: null,
-      isAopaMember: null,
-      insuredFirstName: '',
-      insuredMiddleName: '',
-      insuredLastName: '',
-      insuredEmail:'',
-      insuredAddressLineOne: '',
-      insuredAddressLineTwo: '',
-      insuredCity: '',
-      insuredState: '',
-      insuredCountry: '',
-      insuredZIP: '',
-      age: ''
-    });
-  };
+  // const clearAllFormData = () => {
+  //   localStorage.removeItem('quickQuoteFormData');
+  //   localStorage.removeItem('preQuoteFormData');
+  //   localStorage.removeItem('partialQuoteData');
+  //   localStorage.removeItem('quoteRef');
+  //   localStorage.removeItem('completedQuoteData');
+  //   localStorage.removeItem('savedQuoteRef');
+
+  //   setForm({
+  //     effectiveDate: null,
+  //     coverageType: null,
+  //     extendedCFI: null,
+  //     isAopaMember: null,
+  //     insuredFirstName: '',
+  //     insuredMiddleName: '',
+  //     insuredLastName: '',
+  //     insuredEmail: '',
+  //     insuredAddressLineOne: '',
+  //     insuredAddressLineTwo: '',
+  //     insuredCity: '',
+  //     insuredState: '',
+  //     insuredCountry: '',
+  //     insuredZIP: '',
+  //     age: ''
+  //   });
+  // };
 
   return (
     <div className="min-h-screen bg-[#1A2C47] flex items-center justify-center">
@@ -330,17 +347,17 @@ const QuickQuote = () => {
 
           {/* Email */}
           <div>
-              <label className="block text-sm font-medium text-white mb-1">Email *</label>
-              <input
-                type="email"
-                name="insuredEmail"
-                value={form.insuredEmail}
-                onChange={handleChange}
-                className="w-full rounded-lg bg-white bg-opacity-10 backdrop-blur-md text-white p-2 border border-white border-opacity-20 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                placeholder="Email"
-                required
-              />
-            </div>
+            <label className="block text-sm font-medium text-white mb-1">Email *</label>
+            <input
+              type="email"
+              name="insuredEmail"
+              value={form.insuredEmail}
+              onChange={handleChange}
+              className="w-full rounded-lg bg-white bg-opacity-10 backdrop-blur-md text-white p-2 border border-white border-opacity-20 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              placeholder="Email"
+              required
+            />
+          </div>
           {/* Address */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-white mb-1">Address Line 1 *</label>

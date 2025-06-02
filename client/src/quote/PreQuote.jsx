@@ -99,6 +99,7 @@ const PreQuote = () => {
             twelveMonthsHours: form.twelveMonthsHours,
         };
         localStorage.setItem('preQuoteFormData', JSON.stringify(dataToSave));
+        localStorage.setItem('currentQuoteStep', 'preQuote');
     }, [form]);
 
     const handleSelectChange = (selectedOption, actionMeta) => {
@@ -111,6 +112,7 @@ const PreQuote = () => {
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
+
 
 
     const handleContinue = async () => {
@@ -137,6 +139,41 @@ const PreQuote = () => {
                 overallHours: parseInt(form.overallHours),
                 twelveMonthsHours: parseInt(form.twelveMonthsHours),
             };
+            localStorage.setItem('completeQuoteData', JSON.stringify(completeQuoteData));
+            const { coverageType, extendedCFI, certificateRatings } = completeQuoteData;
+
+            // Decline Logic
+            const allowCoverageTypes = ["Single Engine", "Rotor Wing"];
+
+            if (!allowCoverageTypes.includes(coverageType)) {
+                if (certificateRatings === "Student" && extendedCFI === "No") {
+                    console.warn("Declined: Student pilot with no CFI for restricted coverage type.");
+                    navigate('/decline');
+                    return;
+                }
+
+                if (extendedCFI === "Yes") {
+                    const allowedRatings = ["Private", "Commercial", "ATP"];
+                    if (!allowedRatings.includes(certificateRatings)) {
+                        console.warn(`Declined: Certificate rating '${certificateRatings}' not allowed for CFI = Yes.`);
+                        navigate('/decline');
+                        return;
+                    }
+                }
+            }
+
+            // Referral logic
+            if (certificateRatings === "Commercial" && completeQuoteData.overallHours < 200) {
+                localStorage.setItem('completedQuoteData', JSON.stringify({
+                    ...completeQuoteData,
+                    premium: null,
+                    premiumBreakdown: null,
+                }));
+                navigate('/referral');
+                return;
+            }
+
+
 
             console.log("Sending data to sheet:", completeQuoteData);
 
@@ -171,9 +208,10 @@ const PreQuote = () => {
             };
 
             localStorage.setItem('completedQuoteData', JSON.stringify(finalQuoteData));
-            
             localStorage.setItem('savedQuoteRef', partialData.quoteRef);
             console.log(partialData.quoteRef);
+            //localStorage.removeItem('currentQuoteStep');
+
             setQuoteSaved(true);
             navigate('/display/quotedisplay', { state: { premiumResult: sheetResult } });
 
