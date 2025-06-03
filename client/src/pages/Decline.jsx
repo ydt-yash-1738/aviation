@@ -2,6 +2,17 @@ import { useNavigate } from 'react-router-dom';
 
 const Decline = () => {
   const navigate = useNavigate();
+  const handleDashboard = () => {
+  localStorage.removeItem('completeQuoteData');
+  localStorage.removeItem('completedQuoteData');
+  localStorage.removeItem('currentQuoteStep');
+  localStorage.removeItem('partialQuoteData');
+  localStorage.removeItem('preQuoteFormData');
+  localStorage.removeItem('quickQuoteFormData');
+  localStorage.removeItem('quoteRef');
+  localStorage.removeItem('savedQuoteRef');
+    navigate('/');
+  }
 
   return (
     <div className="min-h-screen bg-[#1A2C47] flex items-center justify-center px-4">
@@ -27,7 +38,7 @@ const Decline = () => {
 
           <div className="flex justify-center">
             <button
-              onClick={() => navigate('/')}
+              onClick={handleDashboard}
               className="bg-[#03B7B7] text-[#1A2C47] hover:bg-[#144074] hover:text-white transition-colors duration-200 border-4 border-[#03B7B7] font-semibold py-3 px-6 rounded-3xl transform hover:scale-105 transition-all duration-300 shadow-lg"
             >
               Back to Home

@@ -46,6 +46,7 @@ const QuoteDisplay = () => {
             try {
                 const parsedData = JSON.parse(savedQuoteData);
                 setQuoteData(parsedData);
+                setQuoteRef(parsedData.quoteRef);
                 if (savedQuoteRef) setQuoteRef(savedQuoteRef);
             } catch (error) {
                 console.error('Error loading quote data:', error);
@@ -67,6 +68,7 @@ const QuoteDisplay = () => {
     const handleEmailThisQuote = async () => {
         const quoteData = JSON.parse(localStorage.getItem('completedQuoteData'));
         console.log(quoteData);
+        
 
         try {
             const response = await fetch('http://localhost:5000/api/tentative-email/send-tentative-quote', {

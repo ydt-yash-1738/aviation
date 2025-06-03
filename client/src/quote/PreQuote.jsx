@@ -14,7 +14,7 @@ const yesNoOptions = [
     { value: 'No', label: 'No' },
 ];
 
-// Custom styles for React Select matching your dark theme
+// css
 const customStyles = {
     control: (provided, state) => ({
         ...provided,
@@ -50,7 +50,7 @@ const customStyles = {
         color: 'rgba(255, 255, 255, 0.6)',
     }),
 };
-
+// parent fn
 const PreQuote = () => {
     const navigate = useNavigate();
     const [quoteSaved, setQuoteSaved] = useState(false);

@@ -8,6 +8,7 @@ import sheetRoutes from './routes/sheet.js';
 import emailRoutes from './routes/email.js';
 import tentativeEmailRoutes from './routes/tentativeEmail.js'
 import retrieveQuoteRoute from './routes/retrieveQuoteRoute.js';
+//import referralEmailRoute from './routes/referralEmail.js';
 
 const app = express();
 app.use(cors());
@@ -26,5 +27,6 @@ app.use('/api/sheet', sheetRoutes);
 app.use('/api', emailRoutes);
 app.use('/api/tentative-email', tentativeEmailRoutes);
 app.use('/api/quote', retrieveQuoteRoute);
+//app.use('/api/referral-email', referralEmailRoute);
 
 app.listen(5000, () => console.log('Server running on http://localhost:5000'));

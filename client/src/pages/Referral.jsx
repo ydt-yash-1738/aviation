@@ -133,6 +133,8 @@ const Referral = () => {
 
             // Save updated data to localStorage
             localStorage.setItem('completedQuoteData', JSON.stringify(updatedQuoteData));
+            localStorage.setItem('savedQuoteRef', updatedQuoteData.quoteRef);
+
 
             // Redirect to display page
             navigate('/display/quotedisplay', { state: { premiumResult: updatedQuoteData } });

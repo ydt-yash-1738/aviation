@@ -45,7 +45,7 @@ const Navbar = () => {
               </div>
               <div className="hidden sm:block pointer-events-none">
                 <h1 className="text-xl text-white font-bold">
-                  Skyline Insurance
+                  SKYLINE INSURANCE
                 </h1>
               </div>
             </Link>
