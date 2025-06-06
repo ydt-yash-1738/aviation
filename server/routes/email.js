@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import SibApiV3Sdk from 'sib-api-v3-sdk';
-import Quote from '../models/Quote.js'
+
 
 // Configure Brevo API key
 const defaultClient = SibApiV3Sdk.ApiClient.instance;
@@ -10,25 +10,28 @@ apiKey.apiKey = process.env.BREVO_API_KEY;
 
 const transactionalEmailsApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
-router.post('/send-quote-email/:quoteRef', async (req, res) => {
-  const { quoteRef } = req.params;
+router.post('/send-quote-email', async (req, res) => {
+  const { quoteRef, quoteData, policyNumber } = req.body;
 
   try {
-    // Fetch quote data from MongoDB by quoteRef
-    const quoteData = await Quote.findOne({ quoteRef }).lean();
-    if (!quoteData) {
-      return res.status(404).json({ error: 'Quote not found' });
-    }
+    // Prefer full quoteData from frontend if provided
+    const {
+      insuredFirstName,
+      coverageType,
+      premium,
+      insuredEmail
+    } = quoteData || {};
 
-    const { insuredFirstName, coverageType, policyNumber, premium } = quoteData;
+
     console.log('Email params:', { insuredFirstName, coverageType, policyNumber, premium });
-    if (!insuredFirstName || !coverageType || !policyNumber || !premium) {
+
+    if (!insuredFirstName || !coverageType || !policyNumber || !premium || !insuredEmail) {
       return res.status(400).json({ error: 'Missing data fields for email template' });
     }
-    // Prepare email parameters
+
     const sendSmtpEmail = {
-      to: [{ email: quoteData.insuredEmail }],
-      templateId: 2,  
+      to: [{ email: insuredEmail }],
+      templateId: 2,
       params: {
         insuredFirstName,
         coverageType,
@@ -36,9 +39,7 @@ router.post('/send-quote-email/:quoteRef', async (req, res) => {
         premium,
       },
     };
-    console.log(sendSmtpEmail);
-    
-    // Send email
+
     const response = await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
 
     res.json({ status: 'success', data: response.body });
@@ -48,5 +49,6 @@ router.post('/send-quote-email/:quoteRef', async (req, res) => {
     res.status(500).json({ status: 'error', message: 'Failed to send email' });
   }
 });
+
 
 export default router;

@@ -46,22 +46,6 @@ const Payment = () => {
         }, 1500);
     };
 
-    // useEffect(() => {
-    //     const savedQuoteData = localStorage.getItem('completedQuoteData');
-    //     const savedQuoteRef = localStorage.getItem('savedQuoteRef');
-
-    //     if (savedQuoteData && savedQuoteRef) {
-    //         try {
-    //             setQuoteData(JSON.parse(savedQuoteData));
-    //             setQuoteRef(savedQuoteRef);
-    //         } catch (error) {
-    //             console.error('Failed to parse quote data:', error);
-    //         }
-    //     } else {
-    //         alert('Quote data is missing. Redirecting...');
-    //         navigate('/quote/pre');
-    //     }
-    // }, [navigate]);
 
     useEffect(() => {
         const savedQuoteData = localStorage.getItem('completedQuoteData');
@@ -87,132 +71,6 @@ const Payment = () => {
         navigate('/display/quotedisplay')
     }
 
-    // const handlePayNow = async () => {
-    //     if (
-    //         (partner !== 'card') ||
-    //         (/^\d{16}$/.test(cardNumber.replace(/\s+/g, '')) &&
-    //             /^\d{2}\/\d{2}$/.test(expiry) &&
-    //             /^\d{3,4}$/.test(cvv))
-    //     ) {
-    //         const quoteData = JSON.parse(localStorage.getItem('completedQuoteData'));
-    //         const quoteRef = localStorage.getItem('savedQuoteRef');
-
-    //         if (!quoteData || !quoteRef) {
-    //             setMessage('Quote data or reference is missing.');
-    //             return;
-    //         }
-
-    //         const finalPayload = {
-    //             ...quoteData,
-    //             quoteRef,
-    //         };
-
-    //         try {
-    //             // Step 1: Save quote to MongoDB
-    //             const response = await fetch('http://localhost:5000/api/quote', {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify(finalPayload),
-    //             });
-
-    //             const result = await response.json();
-
-    //             if (response.ok) {
-    //                 // Step 2: Send final quote email
-    //                 const emailResponse = await fetch(`http://localhost:5000/api/send-quote-email/${quoteRef}`, {
-    //                     method: 'POST',
-    //                 });
-
-    //                 const emailResult = await emailResponse.json();
-
-    //                 if (!emailResponse.ok) {
-    //                     console.warn('Email failed to send:', emailResult);
-    //                 }
-
-    //                 navigate('/confirmation');
-    //             } else {
-    //                 console.error('Error saving quote:', result);
-    //                 setMessage('Failed to submit quote. Please try again.');
-    //             }
-    //         } catch (error) {
-    //             console.error('Network error:', error);
-    //             setMessage('Failed to connect to server. Please try again.');
-    //         }
-    //     } else {
-    //         setMessage('Please fix validation errors before proceeding');
-    //     }
-    // };
-
-    // const handlePayNow = async () => {
-    //     if (
-    //         (partner !== 'card') ||
-    //         (/^\d{16}$/.test(cardNumber.replace(/\s+/g, '')) &&
-    //             /^\d{2}\/\d{2}$/.test(expiry) &&
-    //             /^\d{3,4}$/.test(cvv))
-    //     ) {
-    //         const quoteData = JSON.parse(localStorage.getItem('completedQuoteData'));
-    //         const quoteRef = localStorage.getItem('savedQuoteRef');
-
-    //         if (!quoteData || !quoteRef) {
-    //             setMessage('Quote data or reference is missing.');
-    //             return;
-    //         }
-
-    //         const finalPayload = {
-    //             ...quoteData,
-    //             quoteRef,
-    //         };
-
-    //         try {
-    //             const response = await fetch('http://localhost:5000/api/quote', {
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify(finalPayload),
-    //             });
-
-    //             const result = await response.json();
-
-    //             if (response.ok) {
-    //                 const policyNumber = result.quote.policyNumber;
-    //                 localStorage.setItem('policyNumber', policyNumber);
-    //                 console.log(policyNumber);
-
-    //                 // Send email (optional)
-    //                 const emailResponse = await fetch(`http://localhost:5000/api/send-quote-email/${quoteRef}`, {
-    //                     method: 'POST',
-    //                 });
-
-    //                 if (!emailResponse.ok) {
-    //                     const emailResult = await emailResponse.json();
-    //                     console.warn('Email failed to send:', emailResult);
-    //                 }
-
-    //                 // Clear stored journey state (important for resuming logic)
-    //                 localStorage.removeItem('currentQuoteStep');
-    //                 localStorage.removeItem('partialQuoteData');
-    //                 localStorage.removeItem('preQuoteFormData');
-    //                 localStorage.removeItem('completedQuoteData');
-    //                 localStorage.removeItem('savedQuoteRef');
-
-    //                 navigate('/confirmation');
-    //             }
-    //             else {
-    //                 console.error('Error saving quote:', result);
-    //                 setMessage('Failed to submit quote. Please try again.');
-    //             }
-    //         } catch (error) {
-    //             console.error('Network error:', error);
-    //             setMessage('Failed to connect to server. Please try again.');
-    //         }
-    //     } else {
-    //         setMessage('Please fix validation errors before proceeding');
-    //     }
-    // };
-
     const handlePayNow = async () => {
         if (
             partner !== 'card' ||
@@ -228,6 +86,7 @@ const Payment = () => {
 
             const quoteData = JSON.parse(quoteDataStr);
             let quoteRef = localStorage.getItem('savedQuoteRef');
+            let userId = localStorage.getItem('userId');
 
             // Optional: generate a quoteRef if missing
             if (!quoteRef) {
@@ -238,6 +97,7 @@ const Payment = () => {
             const finalPayload = {
                 ...quoteData,
                 quoteRef,
+                userId
             };
 
             try {
@@ -257,9 +117,36 @@ const Payment = () => {
                     console.log('Policy Number:', policyNumber);
 
                     // Send quote email
-                    await fetch(`http://localhost:5000/api/send-quote-email/${quoteRef}`, {
+                    await fetch(`http://localhost:5000/api/send-quote-email`, {
                         method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ quoteRef, quoteData, policyNumber }), // pass entire data from localStorage
                     });
+
+                    // Finalize the quote on backend
+                    try {
+                        const finalizeResponse = await fetch('http://localhost:5000/api/pending/finalize', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                userId: quoteData.userId,
+                                quoteRef,
+                                policyNumber,
+                            }),
+                        });
+
+                        const finalizeResult = await finalizeResponse.json();
+
+                        if (!finalizeResponse.ok) {
+                            console.error('Finalization failed:', finalizeResult.message);
+                            setMessage('Quote saved but finalization failed. Contact support.');
+                            return;
+                        }
+                    } catch (finalizeErr) {
+                        console.error('Error finalizing quote:', finalizeErr);
+                        setMessage('Quote saved but finalization failed. Please try again.');
+                        return;
+                    }
 
                     // Clear journey data
                     localStorage.removeItem('currentQuoteStep');

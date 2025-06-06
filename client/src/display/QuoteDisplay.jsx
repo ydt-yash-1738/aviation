@@ -17,30 +17,11 @@ const QuoteDisplay = () => {
     const [quoteRef, setQuoteRef] = useState('');
     const [loading, setLoading] = useState(true);
 
-    // useEffect(() => {
-    //     const savedQuoteData = localStorage.getItem('completedQuoteData');
-    //     const savedQuoteRef = localStorage.getItem('savedQuoteRef');
-
-
-    //     if (savedQuoteData && savedQuoteRef) {
-    //         try {
-    //             const parsedData = JSON.parse(savedQuoteData);
-    //             setQuoteData(parsedData);
-    //             setQuoteRef(savedQuoteRef);
-    //         } catch (error) {
-    //             console.error('Error loading quote data:', error);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     } else {
-    //         console.warn('No quote data or reference found in localStorage.');
-    //         setLoading(false); // Ensure loading is cleared even if data is missing
-    //     }
-    // }, []);
 
     useEffect(() => {
         const savedQuoteData = localStorage.getItem('completedQuoteData');
-        const savedQuoteRef = localStorage.getItem('savedQuoteRef');
+        const savedQuoteRef = localStorage.getItem('quoteRef');
+        const isResumeFlow = localStorage.getItem('isResumeFlow');
 
         if (savedQuoteData) {
             try {
@@ -48,6 +29,16 @@ const QuoteDisplay = () => {
                 setQuoteData(parsedData);
                 setQuoteRef(parsedData.quoteRef);
                 if (savedQuoteRef) setQuoteRef(savedQuoteRef);
+                console.log('Parsed quote data:', parsedData);
+
+                if (isResumeFlow === 'true') {
+                    alert(
+                        'You have resumed a previously saved quote.\nPlease review it from the beginning before proceeding to buy.'
+                    );
+                    navigate('/quote/quick')
+                    localStorage.removeItem('isResumeFlow');
+                }
+
             } catch (error) {
                 console.error('Error loading quote data:', error);
             } finally {
@@ -55,7 +46,7 @@ const QuoteDisplay = () => {
             }
         } else {
             console.warn('No quote data found in localStorage.');
-            setLoading(false); // Ensure loading is cleared even if data is missing
+            setLoading(false);
         }
         console.log('Loaded from localStorage:', { savedQuoteData, savedQuoteRef });
     }, []);
@@ -68,7 +59,7 @@ const QuoteDisplay = () => {
     const handleEmailThisQuote = async () => {
         const quoteData = JSON.parse(localStorage.getItem('completedQuoteData'));
         console.log(quoteData);
-        
+
 
         try {
             const response = await fetch('http://localhost:5000/api/tentative-email/send-tentative-quote', {

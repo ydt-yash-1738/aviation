@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Select from 'react-select';
+import axios from 'axios';
 
 const certificateRatings = [
     { value: 'Student', label: 'Student' },
@@ -50,9 +51,10 @@ const customStyles = {
         color: 'rgba(255, 255, 255, 0.6)',
     }),
 };
-// parent fn
+
 const PreQuote = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [quoteSaved, setQuoteSaved] = useState(false);
 
     const [form, setForm] = useState({
@@ -63,44 +65,130 @@ const PreQuote = () => {
     });
 
     useEffect(() => {
-        const savedPreQuoteData = localStorage.getItem('preQuoteFormData');
-        if (savedPreQuoteData) {
-            try {
-                const parsedData = JSON.parse(savedPreQuoteData);
-                if (parsedData.certificateRatings) {
-                    parsedData.certificateRatings = certificateRatings.find(opt => opt.value === parsedData.certificateRatings) || null;
-                }
-                if (parsedData.instrumentRating) {
-                    parsedData.instrumentRating = yesNoOptions.find(opt => opt.value === parsedData.instrumentRating) || null;
-                }
+        const loadData = async () => {
+            // Load data from resumeData if available
+            const resumeData = location.state?.resumeData;
+
+            if (resumeData?.preQuoteFormData || resumeData?.certificateRatings) {
+                // If resumeData has preQuote data or is complete data
                 setForm({
-                    certificateRatings: parsedData.certificateRatings,
-                    instrumentRating: parsedData.instrumentRating,
-                    overallHours: parsedData.overallHours || '',
-                    twelveMonthsHours: parsedData.twelveMonthsHours || '',
+                    certificateRatings: resumeData.certificateRatings
+                        ? certificateRatings.find(opt => opt.value === resumeData.certificateRatings) || null
+                        : resumeData.preQuoteFormData?.certificateRatings
+                            ? certificateRatings.find(opt => opt.value === resumeData.preQuoteFormData.certificateRatings) || null
+                            : null,
+                    instrumentRating: resumeData.instrumentRating
+                        ? yesNoOptions.find(opt => opt.value === resumeData.instrumentRating) || null
+                        : resumeData.preQuoteFormData?.instrumentRating
+                            ? yesNoOptions.find(opt => opt.value === resumeData.preQuoteFormData.instrumentRating) || null
+                            : null,
+                    overallHours: resumeData.overallHours || resumeData.preQuoteFormData?.overallHours || '',
+                    twelveMonthsHours: resumeData.twelveMonthsHours || resumeData.preQuoteFormData?.twelveMonthsHours || '',
+                });
+            } else {
+                // Check for complete resume data in localStorage first
+                const completeResumeData = localStorage.getItem('completeResumeData');
+                if (completeResumeData) {
+                    const parsedData = JSON.parse(completeResumeData);
+                    setForm({
+                        certificateRatings: parsedData.certificateRatings
+                            ? certificateRatings.find(opt => opt.value === parsedData.certificateRatings) || null
+                            : null,
+                        instrumentRating: parsedData.instrumentRating
+                            ? yesNoOptions.find(opt => opt.value === parsedData.instrumentRating) || null
+                            : null,
+                        overallHours: parsedData.overallHours || '',
+                        twelveMonthsHours: parsedData.twelveMonthsHours || '',
+                    });
+                } else {
+                    // Fallback: fetch from database
+                    const userId = localStorage.getItem('userId');
+                    const quoteRef = localStorage.getItem('quoteRef');
+
+                    if (userId && quoteRef) {
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/pending/get/${userId}/${quoteRef}`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.success && data.data) {
+                                    // Load QuickQuote data if PreQuote data doesn't exist but we need to continue the flow
+                                    if (data.data.preQuoteFormData) {
+                                        const preData = data.data.preQuoteFormData;
+                                        setForm({
+                                            certificateRatings: preData.certificateRatings
+                                                ? certificateRatings.find(opt => opt.value === preData.certificateRatings) || null
+                                                : null,
+                                            instrumentRating: preData.instrumentRating
+                                                ? yesNoOptions.find(opt => opt.value === preData.instrumentRating) || null
+                                                : null,
+                                            overallHours: preData.overallHours || '',
+                                            twelveMonthsHours: preData.twelveMonthsHours || '',
+                                        });
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error loading quote data from database:', error);
+                        }
+                    }
+                }
+            }
+
+            // Check if quote was already saved
+            const savedQuoteRef = localStorage.getItem('savedQuoteRef');
+            if (savedQuoteRef) {
+                setQuoteSaved(true);
+            }
+        };
+
+        loadData();
+    }, [location.state]);
+
+    // Auto-save form data to database on every change
+    useEffect(() => {
+        const saveFormData = async () => {
+            const userId = localStorage.getItem('userId');
+            if (!userId) return;
+
+            // Don't save if form is empty
+            if (!form.certificateRatings && !form.instrumentRating) return;
+
+            const quoteRef = location.state?.resumeData?.quoteRef || localStorage.getItem('quoteRef');
+            if (!quoteRef) return;
+
+            const preQuoteData = {
+                certificateRatings: form.certificateRatings ? form.certificateRatings.value : null,
+                instrumentRating: form.instrumentRating ? form.instrumentRating.value : null,
+                overallHours: form.overallHours,
+                twelveMonthsHours: form.twelveMonthsHours,
+            };
+
+            try {
+                await axios.post('http://localhost:5000/api/pending/save-form', {
+                    userId,
+                    quoteRef,
+                    preQuoteFormData: preQuoteData,
+                    currentQuoteStep: 'preQuote'
                 });
             } catch (error) {
-                console.error('Error loading saved pre quote data:', error);
+                console.error('Error auto-saving form data:', error);
             }
-        }
+            const existingCompleteData = localStorage.getItem('completeResumeData');
+            if (existingCompleteData) {
+                const parsedCompleteData = JSON.parse(existingCompleteData);
+                const updatedCompleteData = {
+                    ...parsedCompleteData,
 
-        // Check if quote was already saved
-        const savedQuoteRef = localStorage.getItem('savedQuoteRef');
-        if (savedQuoteRef) {
-            setQuoteSaved(true);
-        }
-    }, []);
-
-    useEffect(() => {
-        const dataToSave = {
-            certificateRatings: form.certificateRatings ? form.certificateRatings.value : null,
-            instrumentRating: form.instrumentRating ? form.instrumentRating.value : null,
-            overallHours: form.overallHours,
-            twelveMonthsHours: form.twelveMonthsHours,
+                    ...preQuoteData,
+                };
+                localStorage.setItem('completeResumeData', JSON.stringify(updatedCompleteData));
+            }
         };
-        localStorage.setItem('preQuoteFormData', JSON.stringify(dataToSave));
-        localStorage.setItem('currentQuoteStep', 'preQuote');
-    }, [form]);
+
+        // Debounce the save operation
+        const timeoutId = setTimeout(saveFormData, 1000);
+        return () => clearTimeout(timeoutId);
+    }, [form, location.state]);
 
     const handleSelectChange = (selectedOption, actionMeta) => {
         setForm((prev) => ({
@@ -113,8 +201,6 @@ const PreQuote = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-
-
     const handleContinue = async () => {
         if (!form.certificateRatings || !form.instrumentRating || !form.overallHours || !form.twelveMonthsHours) {
             alert('Please fill in all fields');
@@ -122,24 +208,21 @@ const PreQuote = () => {
         }
 
         try {
-            const partialDataStr = localStorage.getItem('partialQuoteData');
-
-            if (!partialDataStr) {
-                alert('No preliminary data found. Please start from the beginning.');
+            const resumeData = location.state?.resumeData;
+            if (!resumeData) {
+                alert('Kindly go through your quote from the beginning.');
                 navigate('/quote/quick');
                 return;
             }
 
-            const partialData = JSON.parse(partialDataStr);
-
             const completeQuoteData = {
-                ...partialData,
+                ...resumeData,
                 certificateRatings: form.certificateRatings.value,
                 instrumentRating: form.instrumentRating.value,
                 overallHours: parseInt(form.overallHours),
                 twelveMonthsHours: parseInt(form.twelveMonthsHours),
             };
-            localStorage.setItem('completeQuoteData', JSON.stringify(completeQuoteData));
+
             const { coverageType, extendedCFI, certificateRatings } = completeQuoteData;
 
             // Decline Logic
@@ -164,16 +247,20 @@ const PreQuote = () => {
 
             // Referral logic
             if (certificateRatings === "Commercial" && completeQuoteData.overallHours < 200) {
-                localStorage.setItem('completedQuoteData', JSON.stringify({
-                    ...completeQuoteData,
-                    premium: null,
-                    premiumBreakdown: null,
-                }));
+                // Save completed quote data to database
+                await axios.post('http://localhost:5000/api/pending/save-completed', {
+                    userId: localStorage.getItem('userId'),
+                    quoteRef: resumeData.quoteRef,
+                    completedQuoteData: {
+                        ...completeQuoteData,
+                        premium: null,
+                        premiumBreakdown: null,
+                    }
+                });
+
                 navigate('/referral');
                 return;
             }
-
-
 
             console.log("Sending data to sheet:", completeQuoteData);
 
@@ -207,10 +294,15 @@ const PreQuote = () => {
                 premiumBreakdown: sheetResult.breakdown,
             };
 
+            // Save completed quote data to database
+            await axios.post('http://localhost:5000/api/pending/save-completed', {
+                userId: localStorage.getItem('userId'),
+                quoteRef: resumeData.quoteRef,
+                completedQuoteData: finalQuoteData
+            });
+
+            localStorage.setItem('savedQuoteRef', resumeData.quoteRef);
             localStorage.setItem('completedQuoteData', JSON.stringify(finalQuoteData));
-            localStorage.setItem('savedQuoteRef', partialData.quoteRef);
-            console.log(partialData.quoteRef);
-            //localStorage.removeItem('currentQuoteStep');
 
             setQuoteSaved(true);
             navigate('/display/quotedisplay', { state: { premiumResult: sheetResult } });
@@ -221,9 +313,12 @@ const PreQuote = () => {
         }
     };
 
-
     const handlePrevious = () => {
-        navigate('/quote/quick');
+        // Get complete resume data to pass back
+        const completeResumeData = localStorage.getItem('completeResumeData');
+        const resumeData = completeResumeData ? JSON.parse(completeResumeData) : location.state?.resumeData;
+
+        navigate('/quote/quick', { state: { resumeData: resumeData } });
     };
 
     return (

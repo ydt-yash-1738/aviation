@@ -111,10 +111,20 @@ const RetrieveQuote = () => {
             <tbody>
               {quotes.map((quote, index) => (
                 <tr key={index} className="border-t border-[#03B7B7] hover:bg-[#1f3a5a] transition-colors">
-                  <td className="py-3 px-5">{quote.policyNumber}</td>
-                  <td className="py-3 px-5">{quote.insuredFirstName}</td>
-                  <td className="py-3 px-5">{quote.insuredLastName}</td>
-                  <td className="py-3 px-5">${quote.premium.toFixed(2)}</td>
+                  <td className="py-3 px-5">
+                    {quote.policyNumber || '—'}
+                  </td>
+                  <td className="py-3 px-5">
+                    {quote.completedQuoteData?.insuredFirstName || quote.quickQuoteFormData?.insuredFirstName || '—'}
+                  </td>
+                  <td className="py-3 px-5">
+                    {quote.completedQuoteData?.insuredLastName || quote.quickQuoteFormData?.insuredLastName || '—'}
+                  </td>
+                  <td className="py-3 px-5">
+                    {quote.completedQuoteData?.premium !== undefined
+                      ? `$${Number(quote.completedQuoteData.premium).toFixed(2)}`
+                      : '—'}
+                  </td>
                   <td className="py-3 px-5">
                     <div className="flex gap-4">
                       <a href="#" className="text-blue-300 hover:text-blue-500 underline">Adjust Policy</a>

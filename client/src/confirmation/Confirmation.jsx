@@ -40,7 +40,11 @@ const QuoteConfirmation = () => {
           </p>
           <button
             onClick={() => {
-              localStorage.clear(); // Clearing all localStorage
+              localStorage.removeItem('quickQuoteFormData');
+              localStorage.removeItem('quoteRef');
+              localStorage.removeItem('completeResumeData');
+              localStorage.removeItem('quoteData');
+              localStorage.removeItem('policyNumber');
               navigate('/intro');
             }}
             className="bg-[#144074] text-white hover:bg-[#03B7B7] hover:text-[#1A2C47] transition-colors duration-200 border-4 border-[#03B7B7] font-semibold py-3 px-4 rounded-3xl transform hover:scale-105 transition-all duration-300 shadow-lg"

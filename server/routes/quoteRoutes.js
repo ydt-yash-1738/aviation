@@ -23,32 +23,29 @@ router.post('/', async (req, res) => {
     console.log('Received premium:', quoteData.premium.toFixed(2));
     console.log('Received premium breakdown:', quoteData.premiumBreakdown);
 
-    // const newQuote = new Quote({
-    //   ...quoteData, // this includes premium and premiumBreakdown if sent from frontend
-    // });
 
     const newQuote = new Quote(quoteData);
     const savedQuote = await newQuote.save();
 
      res.status(201).json({
-      message: 'Quote saved successfully',
-      quote: savedQuote,
-    });
+       message: 'Quote saved successfully',
+       quote: savedQuote,
+     });
 
   } catch (error) {
     console.error('Error saving quote:', error);
 
     if (error.name === 'ValidationError') {
       const validationErrors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ 
-        message: 'Validation failed', 
-        errors: validationErrors 
+      return res.status(400).json({
+        message: 'Validation failed',
+        errors: validationErrors
       });
     }
 
     if (error.code === 11000) {
-      return res.status(400).json({ 
-        message: 'Duplicate quote reference. Please try again.' 
+      return res.status(400).json({
+        message: 'Duplicate quote reference. Please try again.'
       });
     }
 

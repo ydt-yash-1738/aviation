@@ -10,11 +10,10 @@ const Navbar = () => {
     e.preventDefault();
     console.log('Logout clicked');
 
-    // Also clear any auth data if stored
-    localStorage.removeItem('auth');
+    localStorage.clear();
 
-    logout(); 
-    navigate('/login'); 
+    logout();
+    navigate('/login');
   };
 
 
@@ -67,6 +66,16 @@ const Navbar = () => {
                   to="/intro"
                   className="text-white hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200 relative group cursor-pointer"
                   style={{ textDecoration: 'none' }}
+                  onClick={() => {
+                    localStorage.removeItem('quickQuoteFormData');
+                    localStorage.removeItem('preQuoteFormData');
+                    localStorage.removeItem('completedQuoteData');
+                    localStorage.removeItem('quoteRef');
+                    localStorage.removeItem('currentQuoteStep');
+                    localStorage.removeItem('completeResumeData');
+                    localStorage.removeItem('quoteData');
+                    localStorage.removeItem('isResume');
+                  }}
                 >
                   Dashboard
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#00CCFF] group-hover:w-full transition-all duration-300 pointer-events-none"></span>
@@ -76,7 +85,7 @@ const Navbar = () => {
                   className="text-white hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200 relative group cursor-pointer"
                   style={{ textDecoration: 'none' }}
                 >
-                  Retrive a Quote
+                  Retrive a Binded Quote
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#00CCFF] group-hover:w-full transition-all duration-300 pointer-events-none"></span>
                 </Link>
                 <Link
